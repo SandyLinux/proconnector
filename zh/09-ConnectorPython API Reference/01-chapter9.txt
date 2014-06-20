@@ -1,0 +1,1235 @@
+9 Connector/Python API Reference
+
+9.1 模块 mysql.connector
+
+	mysql.connector模块提供top-level方法和属性。
+
+9.1.1 方法 mysql.connector.connect()
+
+	该方法设置一个连接，建立与Mysql的会话。如果没有给定参数，它将使用已配置的或者默认值。可用的参数完整列表见第七章 Connector/Python Connection Arguments。
+	
+	与Mysql服务器的连接可以通过mysql.connector.connect()方法或者mysql.connector.MySQLConnection（）类建立。
+
+	cnx = mysql.connector.connect(user='joe',database='test')cnx = MySQLConnect(user='joe',database='test')
+
+9.1.2 属性 mysql.connector.apilevel
+
+	该属性是一个字符串，表明支持的DB API级别。
+
+9.1.3 属性 mysql.connector.paramstyle
+
+	该属性是一个字符串，表明Connector/Python默认参数样式。
+
+9.1.4 属性 mysql.connector.threadsafety
+
+	该属性是一个整数，表明Connector/Python提供的线程安全支持的级别。
+
+9.1.5 属性 mysql.connector.__version__
+
+	该属性是一个字符串，表明Connector/Python版本。
+
+9.1.6 属性 mysql.connector.__version_info__
+
+	该属性以版本组件数组的形式表明Connector/Python的版本。
+
+9.2 类connection.MySQLConnection
+
+	MySQLConnection类用于打开和管理一个MySQL服务器连接。它也用于发送命令和SQL语句及读取结果。
+
+9.2.1 构造器 connection.MySQLConnection(**kwargs)
+
+	MySQLConnection构造器初始化属性，当至少一个参数传递时，它尝试去连接MySQL服务器。
+
+	完整的参数列表，查看第7章。
+
+9.2.2 属性 MySQLConnection.close()
+
+	语法：cnx.close()
+
+	close()是disconnect()的同义词。查看9.2.20章。
+
+	对于从连接池里获得的连接，close()实际上不关闭它，但是返回它到池中，使其可用于后续的连接请求。查看8.1章 Connector/Python Connection Pooling。
+
+9.2.3 方法 MySQLConnection.commit()
+
+	该方法发送一段COMMIT语句给MySQL 服务器,提交当前的transaction。因为默认Connector/Python不会自动提交，因此在每个transaction后调用该方法是非常重要的。
+
+	>>>cursor.execute("INSERT INTO employees (first_name) VALUES (%s)",('Jane'))
+	>>>cnx.commit()
+
+9.2.4 方法 MySQLConnection.config(**kwargs)
+
+	语法：cnx.config(**kwargs)
+	
+	配置一个MySQLConnection实例，在它被实例化之后。完整的可用参数列表，见第7章Connector/Python Connection Arguments。
+	
+	参数：
+	 * kwargs : 连接参数
+
+	你可以使用config()方法改变用户名，然后调用reconnect():
+
+	cnx = mysql.connector.connect(user='joe',database='test')
+	cnx.config(user='jane')
+	cnx.reconnect()
+
+	对于连接从连接池获得的连接，config()会抛出一个异常。
+
+9.2.5 方法 MySQLConnection.connect()
+
+	语法：MySQLConnection.connect(**kwargs)
+
+	该方法设置一个连接，建立与MySQL服务器的会话。如果没有给定参数，那么它将使用已经配置的或者默认值。
+
+	参数：
+
+	 * kwargs 连接参数
+
+	例子：
+
+	cnx = MySQLConnection(user='joe',database='test')
+
+	对于从连接池获得的连接，连接对象的类是PooledMySQLConnection。一个pooled连接与一个unpooled连接不同，在8.1章 "Connector/Python Connection Pooling"有描述。
+
+
+9.2.6 方法 MySQLConnection.cursor(buffered=None,raw=None,cursor_class=None)
+
+	该方法返回一个MySQLCursor()对象，或者它的一个子类中，这取决于传递的参数。
+	
+	当buffered是True时，操作执行后，该cursor抓取所有的行。当查询返回一个小的结果集时，这是很有用的。
+	
+	设置raw，当抓取到行后，不会转换MySQL 数据类型为Python类型。Raw常用于你想要获得更好的性能或者你想要自己转换的时候。
+
+	cursor_class参数用于传递一个类用于实例化一个新cursor。它必须是cursor.CursorBase的一个子类。
+
+	返回对象依赖于buffered和raw参数的组合。
+
+	 * 如果buffered和raw都没有:cursor.MySQLCursor
+	 * 如果有buffered而没有raw:cursor.MySQLCursorBuffered
+	 * 如果有buffered和raw都有:cursor.MySQLCursorBufferedRaw
+	 * 如果没有buffered而有raw:cursor.MySQLCursorRaw
+
+	返回一个CursorBase实例。
+
+9.2.7 方法 MySQLConnection.cmd_change_user(username='',password='',database='',charset=33)
+
+	使用uername和password改变用户，这也导致指定的database变成默认（当前的）database。它也可通过charset参数改变字符集。
+
+	返回一个字典包含ok包信息。
+
+9.2.8 方法 MySQLConnection.cmd_debug()
+
+	指示服务器将调试信息写到错误日志。连接的用户必须要有SUPER权限。
+
+	返回一个字典包含ok包信息。
+
+9.2.9 方法MySQLConnection.cmd_init_db(database)
+
+	该方法指定database为默认（当前）database。在随后的查询中，这个数据库是默认的表引用，包括没有明确的数据库限定符的。
+	
+	返回一个字典包含OK包信息。
+
+9.2.10 方法 MySQLConnection.cmd_ping()
+
+	检查连接的服务器是否正在工作。
+	
+	该方法不能直接使用，用ping()或者is_connected()代替。
+
+	返回一个字典包含ok包信息。
+
+9.2.11 方法 MySQLConnection.cmd_process_info()
+
+	该方法抛出NotSupportedError异常。使用SHOW PROCESSLIST语句或者查询数据INFORMATION_SCHEMA中的表代替。
+
+9.2.12 方法 MySQLConnection.cmd_process_kill(mysql_pid)
+
+	告诉服务器杀死mysql_pid指定的线程。虽然还可用，但是使用KILL SQL语句更好。
+
+	返回一个包含OK信息包的字典。
+
+	>>>cnx.cmd_proccess_kill(123)
+	>>>cnx.cmd_query('KILL 123')
+
+9.2.13 方法 MySQLConnection.cmd_query(statement)
+
+	该方法发送给定的statement到MySQL服务器并且返回一个结果。发送多条statement，使用cmd_query_iter()方法代替。
+	
+	返回的字典包含的信息依赖哪种查询被执行。如果查询时SELECT语句，结果信息包含columns。其他语句返回一个字典包含OK或者EOF包信息。
+	
+	从MySQL服务器接收到的错误会被作为异常抛出。当发现多个结果时，抛出一个InterfaceError异常。
+	
+	返回一个字典。
+
+9.2.14 方法 MySQLConnection.cmd_query_iter(statement)
+
+	类似于cmd_query()方法，但该方法返回一个生成器对象来遍历结果。当发送多个statement时，使用cmd_query_iter()，并且使用分号分隔。
+	
+	下面这个例子说明了，发送多个statement后怎么遍历结果：
+	
+	statement = 'SELECT 1;INSERT INTO t1 VALUES ();SELECT 2'
+	for result in cnx.cmd_query_iter(statement):
+	if 'columns' in result:
+		columns = result['columns']
+		rows = cnx.get_rows()
+	else:
+		#do something
+	
+	返回一个生成器对象。
+
+9.2.15 方法 MySQLConnection.cmd_quit()
+
+	该方法发送一个QUIT命令给MySQL服务器，关闭当前连接。因为从MySQL没有响应，因此将返回被发送的包。
+
+9.2.16 方法 MySQLConnection.cmd_refresh(options)
+
+	该方法刷新表和缓存，或者重置replication服务器信息。连接的用户必须要有RELOAD权限。
+	
+	options参数应该是一个位掩码值，使用constants.RefreshOption类的常量构建的。
+	
+	options列表，见9.12章 "Class constants.RefreshOption"
+	例子：
+	>>>from mysql.connector import RefreshOption
+	>>>refresh = RefreshOption.LOG | RefreshOption.THREADS
+	>>>cnx.cmd_refresh(refresh)
+
+9.2.17 方法 MySQLConnection.cmd_reset_connection()
+
+	语法：cnx.cmd_reset_connection()
+	
+	通过发送一个COM_RESET_CONNECTION命令给服务器重置连接来清除会话状态。
+	
+	该方法允许不重新认证来清除会话状态。对于早于MySQL5.7.3版本（COM_RESET_CONNECTION刚推出。），使用reset_session()方法代替。那个方法需要重新认证来重置会话状态，这花费更多资源。
+	
+	该方法在Connector/Python 1.2.1中添加。
+
+9.2.18 方法 MySQLConnection.cmd_shutdown()
+
+	该方法告诉数据库服务器关机。这要求连接的用户必须要有SHUTDOWN权限。
+
+	返回一个包含OK包信息的字典。
+
+9.2.19 方法 MySQLConnection.cmd_statistics()
+
+	返回一个字典包含的信息是关于MySQL服务器的uptime,threads,questions,reloads,open tables。
+	
+9.2.20 方法 MySQLConnection.disconnect()
+
+	该方法尝试发送QUIT命令和关闭socket。它不抛出异常。MySQLConnection.close()是它的一个同义方法并且使用得更多。
+
+9.2.21 方法 MySQLConnection.get_row()
+
+	该方法检索查询结果的下一行，返回一个元组。
+
+	通过get_row返回的元组的组成：
+
+	 * 以包含比特对象的元组表示的行，或者当没有行的时候的None。
+	 * 以包含status_flag,warning_count或者当返回的行不是最后一行时的None的字典表示的EOF包信息。
+
+	get_row()方法用于MySQLCursor抓取行。
+
+9.2.22 方法 MySQLConnection.get_rows(count=None)
+
+	该方法取回一个查询结果集合的所有的或者剩余的行，返回一个元组包含行作为序列和EOF包信息。count参数用于获得给定数量的行。如果cout没有指定或者为None，将取回所有的行。
+	
+	被get_rows()返回的元组的组成：
+
+	 * 一个元组列表，元组中包含了以字节对象表示的行数据，或者当没有行的时候的空列表。
+	 * 以包含status_flag和warning_count的字典表示的EOF包信息。
+
+	当所有的行已被取回后，抛出InterfaceError。
+
+	MySQLCursor使用get_rows()方法抓取行。
+
+	返回一个元组。
+
+9.2.23 方法 MySQLConnection.get_server_info()
+
+	该方法逐字返回MySQL服务器信息作为字符串，例如'5.6.11-log',或者当没有连接时的None。
+
+9.2.24 方法 MySQLConnection.get_server_version()
+
+	该方法返回以元组的形式返回MySQL的版本，或者当没有连接时为None。
+
+9.2.25 方法 MySQLConnection.is_connected()
+
+	报告MySQL服务器连接是否可用。
+
+	该方法使用ping()方法检测MySQL连接是否可用，但是不像ping(),is_connected()返回True或者False。
+	
+9.2.26 方法 MySQLConnection.isset_client_flag(flag)
+
+	如果client flag设置了返回为True，否则为False。
+
+9.2.27 方法 MySQLConnection.ping(attempts=1,delay=0)
+
+	检测MySQL服务器的连接是否仍然可用。
+
+	当reconnect设为True，使用reconnect()一次或者更多次attempts去重连MySQL服务器。如果你想要每次重试的时候等待段时间，可使用delay参数。
+
+9.2.28 方法 MySQLConnection.reconnect(attempts=1,delay=0)
+
+	尝试重连MySQL服务器。
+
+	attempts参数指定重连的次数，delay参数指定每次重连等待的秒数。
+
+	当你期望的MySQL服务器停机维护或者网络临时不可用时，你可以设置attempts更高或者delay更长。
+
+9.2.29 方法 MySQLConnection.reset_session()
+
+	语法：cnx.reset_session(user_variables=None,session_variables=None)
+
+	通过重新认证来重置连接清除会话状态。如果给定user_variables，它是用户变量名称和值的字典，如果给定session_variables，它是系统变量名称和值的字典。该法设置每个变量为为给定的值。
+
+	例如：
+
+	user_variables = {'var1':'1','var2':'10'}
+	session_variables = {'wait_timeout':10000,'sql_mode':'TRADITIONAL'}
+	self.cnx.reset_session(user_variables,session_variables)
+
+	对于MySQL 5.7.3或者以后的版本，使用cmd_reset_connection()方法代替。
+
+	该方法在Connector/Python 1.2.1中添加。
+
+9.2.30 方法 MySQLConnection.rollback()
+
+	该方法发送一个ROLLBACK语句给MySQL服务器，从当前事务中撤消所有数据的改变。默认的，Connector/Python不会自动提交，因此当使用的是事务性储存引擎如InnoDB时，是可能取消事务的。
+
+	>>>cursor.execute("INSERT INTO employees (first_name) VALUES (%s)",('Jane'))
+	>>>cnx.rollback()
+
+	提交修改，请查看commit()方法。
+
+9.2.31 方法 MySQLConnection.set_charset_collation(charset=None,collation=None)
+
+	该方法设置charset集和collation用于当下连接。charset参数既可以是字符集的名称或者constants.CharacterSet中定义的等效数字。
+
+	当collation为None时，使用字符集的默认collation。
+
+	下面的例子，我们设置字符集为latin1和collation为latin_swedish_ci(默认的collation为latin1):
+
+	>>>cnx = mysql.connector.connect(user='scott')
+	>>>cnx.set_charset_collation('latin1')
+
+	指定collation如下：
+
+	>>>cnx = mysql.connector.connect(user='scott')
+	>>>cnx.set_charset_collation('latin1','latin1_general_ci')
+
+9.2.32 方法 MySQLConnection.set_client_flags(flags)
+
+	该方法设置客户端标志来在连接MySQL服务器的时候使用,返回以整数的形式返回一个新值。flags参数既可以是一个整数或者合法客户端标志值的序列（查看9.8章，Class constants.ClientFlag。）
+
+	如果flags是一个序列，序列中的每个值当它的值为正时设置标志，或者当它的值为负的时候取消设置。例如，取消设置LONG_FLAG 和设置FOUND_ROWS标志：
+
+	>>>from mysql.connector.constants import ClientFlag
+	>>>cnx.set_client_flags([ClientFlag.FOUND_ROWS,-ClientFlag.LONG_FLAG])
+	>>>cnx.reconnect()
+
+	注意，客户端标志只能在连接服务器的时候设置和使用，因此作出改变后需要reconnect。
+
+9.2.33 方法 MySQLConnection.start_transaction()
+
+	该方法开启一个事务。它接受参数指明是否使用consistent snapshot,使用哪种transaction isolation level，和transaction access mode:
+
+	cnx.start_transaction(consistent_snapshot=bool,isolation_level=level,readonly=access_mode)
+
+	默认的consistent_snapshot值是False。如果值为True，Connector/Python发送WITH CONSISTENT SNAPSHOT语句。MySQL对isolation level忽视它，该选项不适用。
+
+	默认的isolation_level的值为None，允许的值为'READ UNCOMMITTED','READ COMMITTED','REPEATABLE READ','SERIALIZABLE'。如果isolation_level的值为None，则没有隔离级别被发送，因此应用默认的级别。
+
+	readonly参数为True时，以READ ONLY模式开始事务，或者为False时，以READ WRITE模式开始事务。如果readonly省略，使用服务器的默认访问模式。详细的事务访问模式，查看START TRANSACTION,COMMIT,和ROLLBACK语法中START TRANSTACTION语句的描述。如果服务器的版本比5.6.5旧，不支持设置访问模式并且Connector/Python 抛出ValueError。
+
+	如果调用正在进行中的事务，调用start_transaction()会抛出一个ProgrammingError异常。这不同于在事务正在进行时执行START TRANSACTION SQL语句。该语句隐式提交当前事务。
+
+	决定事务对于连接是否处于活动状态，使用in_transaction属性。
+
+	start_transaction()在MySQL Connector/Python 1.1.0中添加。readonly参数在MySQL Connector/Python 1.1.5中添加
+
+9.2.34 属性 MySQLConnection.autocommit
+
+	该属性可以被赋值True或False来开启或关闭MySQL自动提交的特征。该属性能被调用来获取当前自动提交的设置。
+
+	注意，当通过Connector/Python连接时，默认自动提交是关闭的。可使用autocommit 连接参数来开启。
+
+	当自动提交关闭以及使用事务存储引擎为InnoDB或者NDBCluster时，你必须提交事务。
+
+	>>>cnx.autocommit
+	False
+	>>>cnx.autocommit = True
+	>>>cnx.autocommit
+	True
+
+9.2.35 属性 MySQLConnection.charset_name
+
+	该属性返回一个字符串说明连接使用哪种字符集，不管它是否连接。
+
+9.2.36 属性 MySQLConnection.collation_name
+
+	该属性返回一个字符串说明连接使用哪种collation，不管它是否连接。
+
+9.2.37 属性 MySQLConnection.connection_id
+
+	该属性为当前连接返回一个整数连接ID（进程ID或者会话ID）或者当没有连接时返回None。
+
+9.2.38 属性 MySQLConnection.database
+
+	该属性通过USE语句设置当前的（默认的）数据库。它也可以用来获取当前数据库的名称。\
+
+	>>> cnx.database = 'test'
+	>>> cnx.database = 'mysql'
+	>>> cnx.database
+	u'mysql'
+
+	返回一个字符串。
+
+9.2.39 属性 MySQLConnection.get_warnings
+
+	该属性可以被赋值为True和False来开启或者关闭是否警告应该被自动抓取。默认值是False。该属性能被调用用来获取当前的warnings设置。
+
+	当debugging 查询的时候，自动抓取警告是有用的。Cursors通过MySQLCursor.fetchwarnings()使警告可用。
+
+	>>>cnx.get_warnings = True
+	>>>cursor.execute('SELECT "a"+1')
+	>>>cursor.fetchall()
+	[(1.0,)]
+	>>>cursor.fetchwarnings()
+	[(u'Warning',1292,u"Truncated incorrect DOUBLE value:'a'")]
+	
+	返回True或者False
+
+9.2.40 属性 MySQLConnection.in_transaction
+
+	该属性返回True或者False来指明对于该连接一个事务是否处于活动状态。不管你是使用start_transaction() API调用或直接执行一个SQL语句如"START TRANSACTION 或者BEGIN"，它的值都为True。
+
+	>>>cnx.start_transaction()
+	>>>cnx.in_transaction
+	True
+	>>>cnx.commit()
+	>>>cnx.in_transaction
+	False
+
+	in_transaction是在MySQL Connector/Python 1.1.0中加入。
+
+9.2.41 属性 MySQLConnection.raise_on_warnings
+
+	该属性可以被赋值True或者False来开启或者关闭警告是否应该抛出异常。默认为False。该属性被调用来获取当前的异常设置。
+
+	设置raise_on_warnings也会设置get_warnings，因为警告需要被抓取，因此他们才能以异常被抛出。
+
+	注意，如果你想MySQL服务器直接报告警告为错误，你可能想要设置SQL模式（见9.2.44章，"属性MySQLConnection.sql_mode"）。使用事务引擎也很好，这样当抓取到异常时，事务就能被回滚。
+
+	在任何异常被抛出前，结果集合需要被完全抓取。下面的例子是显示一条查询的执行产生一个警告：
+
+	>>>cnx.raise_on_warnings = True
+	>>>cursor.execute('SELECT "a"+1')
+	>>>cursor.fetchall()
+	..
+	mysql.connector.error.DataError:1292:Truncated incorrect DOUBLE value :'a'
+
+	返回True或False
+
+9.2.42 属性 MySQLConnection.server_host
+
+	该只读属性返回用于连接MySQL服务器的主机名称或者IP地址。
+
+	返回一个字符串。
+
+9.2.43 属性 MySQLConnection.server_port
+
+	该只读属性返回用于连接MySQL服务器的TCP/IP端口。
+	
+	返回一个整数。
+
+9.2.44 属性 MySQLConnection.sql_mode
+	
+	该属性用于为当前连接获取和设置SQL模式。这个值应是一个通过逗号隔开的不同模式的列表，或者模式的一个序列，最好使用constants.SQLMode类。
+
+	不设置所有模式，可以传一个空字符或者一个空序列。
+
+	>>>cnx.sql_mode = 'TRADITIONAL,NO_ENGINE_SUBSTITUTION'
+	>>>cnx.sql_mode.split(',')
+		[u'STRICT_TRANS_TABLES',u'STRICT_ALL_TABLES',u'NO_ZERO_IN_DATE',u'NO_ZERO_DATE',u'ERROR_FOR_DIVISION_BY_ZERO',u'TRADITIONAL',u'NO_AUTO_CREATE_USER',u'NO_ENGINE_SUBSTITUTION']
+
+	>>>from mysql.connector.constants import SQLMode
+	>>>cnx.sql_mode = [SQLMode.NO_ZERO_DATE,SQLMode.REAL_AS_FLOAT]
+	>>>cnx.sql_mode
+	u'REAL_AS_FLOAT,NO_ZERO_DATE'
+
+	返回一个字符串。
+
+9.2.45 属性 MySQLConnection.time_zone
+
+	该属性用于对当前连接设置或者获取时区会话变量。
+
+	>>>cnx.time_zone = '+00:00'
+	>>>cur.execute('SELECT NOW()');cur.fetchone()
+	（datetime.datetime(2012,6,15,11,24,36),）
+	>>>cnx.time_zone = '-09:00'
+	>>>cur.execute('SELECT NOW()');cur.fetchone()
+	（datetime.datetime(2012,6,15,2,24,44),）
+	>>>cnx.time_zone
+	u'-09:00'
+
+	返回一个字符串。
+
+9.2.46 属性 MySQLConnection.unix_socket
+
+
+	该只读属性返回用于连接该MySQL服务器的Unix socket文件。
+	
+	返回一个字符串。
+
+9.2.47 属性 MySQLConnection.user
+
+	该只读属性返回用于连接MySQL服务器的用户名。
+
+	返回一个字符串。
+
+9.3 类 pooling.MySQLConnectionPool
+
+	该类提供了连接池的实例化和管理。
+	
+9.3.1 构造器 pooling.MySQLConnectionPool
+
+	语法：MySQLConnectionPool(pool_name=None, pool_size=5, pool_reset_sessions=True,**kwargs)
+	
+	该构造器实例化一个对象来管理一个连接池：
+	参数：
+
+	 * pool_name:连接池名称。如果该参数没给，Connector/Python会自动生成名称。由kwargs中给出的host,port,user和database连接参数以该顺序组成。对于多个池有相同的名称不会被认为是一个错误。一个应用应该用它们的pool_name属性来区分不同的池，应该为每个池创建一个不同的名称。	
+	 * pool_size:池大小，如果没有给出，默认是5。
+	 * pool_reset_session：当连接被返回到池的时候，是否重置会话变量。该参数在Connector/Python 1.1.5中添加。1.1.5以前，会话变量不会被重置。
+	 * kwargs:可选额外连接参数，如第7章 Connector/Python Connection Arguments中描述。
+
+	例子：
+	dbconfig = {"database":"test","user":"joe",}
+	cnxpool = mysql.connector.pooling.MySQLConnectionPool(pool_name = "mypool",pool_size = 3,**dbconfig)
+
+9.3.2 方法 MySQLConnectionPool.add_connection()
+
+	语法：cnxpool.add_connection(cnx = None)
+
+	该方法添加一个新的或已存在的MySQLConnection到池，或者如果池满了抛出一个PoolError。
+
+	参数：
+	 * cnx:MySQLConnection对象被添加到池。如果该参数没有给，则该池就新增一个连接并添加它。
+
+	 例子:
+
+	cnxpool.add_connection()    #添加一个新连接到池
+	cnxpool.add_connection(cnx) #添加存在的连接到池
+
+9.3.3 方法 MySQLConnectionPool.get_connection()
+
+	语法：cnxpool.get_connection()
+
+	该返回从连接池返回一个连接，或如没有连接可用则抛出一个PoolError。
+
+	例子：
+	cnx = cnxpool.get_connection()
+
+9.3.4 方法 MySQLConnectionPool.set_config()
+
+	语法：cnxpool.set_config(**kwargs)
+
+	该方法为pool中的连接设置配置参数。配置更改后，pool中的连接请求使用新参数。改变之前所获得的连接不受影响。但是，当他们被关闭（返回pool中）使用新参数重新打开，在被pool为后续连接请求返回之前。
+
+	参数：
+
+	 * kwargs：连接参数。
+
+	例子：
+
+	dbconfig = {
+	"database":"performance_schema",
+	"user":    "admin",
+	"password":"secret",
+	}
+
+	cnxpool.set_config(**dbconfig)
+
+9.3.5 属性 MySQLConnectionPool.pool_name
+
+	语法：cnxpool.pool_name
+	
+	该属性返回连接池名。
+	
+	例子：
+
+	name = cnxpool.pool_name
+
+9.4 类 pooling.PooledMySQLConnection
+
+	该类用于MySQLConnectionPool返回一个pooled连接实例。It is also the class used for connections obtained with calls to the connect() method that name a connection pool（查看8.1章 "Connector/Python Connection Pooling"）
+
+	PooledMySQLConnection pooled 连接对象是类似于MySQLConnection unpooled 连接对象，有以下的不同点：
+
+	 * 释放一个从连接池获得的pooled连接，调用它的close()方法，如任何的unpooled连接一样。然而，对于一个pooled连接，close()其实不关闭连接而是返回它到池，使得它对后续的连接请求可用。
+	 * 一个pooled连接不能被使用config()重新配置。改变连接必须通过池对象本身来完成，稍后会有描述。
+	 * 一个pooled连接有一个pool_name属性返回池名。
+
+9.4.1 构造器 pooling.PooledMySQLConnection
+
+	语法：PooledMySQLConnection(cnxpool,cnx)
+	
+	该构造器带一个连接池和连接参数，并返回一个pooled的连接。它被MySQLConnectionPool类使用。
+	
+	参数： 
+	 * cnxpool:一个MySQLConnectionPool实例。
+	 * cnx:一个MySQLConnection实例。
+	
+	例子：
+
+	pcnx = mysql.connector.pooling.PooledMySQLConnection(cnxpool,cnx)
+
+9.4.2 方法 PooledMySQLConnection.close()
+
+	语法：cnx.close()
+	
+	返回一个pooled连接到它的连接池。
+	
+	对于一个pooled的连接，close()实际上并不会关闭连接，而是返回它到连接池，使得对后续的连接请求可用。
+	
+	如果pool配置参数改变了，一个返回的连接被关闭并且使用新的配置重新打开，before being returned from the pool again in response to a connection request.
+
+9.4.3 方法 PooledMySQLConnection.config()
+
+	对于pooled连接，config()方法抛出一个PoolError异常。为pooled连接配置应该通过使用pool对象完成。
+
+9.4.4 属性 PooledMySQLConnection.pool_name
+
+	语法：cnx.pool_name
+	
+	该属性返回该连接所属连接池的名称。
+	例子：cnx = cnxpool.get_connection()name = cnx.pool_name
+
+9.5 类 cursor.MySQLCursor
+
+	MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使用MySQLConnection对象与MySQL服务器进行交互。
+	这些相关的类是从cursor.MySQLCursor继承：
+
+	* cursor.MySQLCursorBuffered创建一个被缓存的cursor。查看第9.6章，"类 cursor.MySQLCursorBuffered"。
+	* cursor.MySQLCursorPrepared为准备执行的语句创建一个cursor。查看第9.7章，"类 cursor.MySQLCursorPrepared"。
+
+9.5.1 构造器 cursor.MySQLCursor
+
+	该构造器带可选项connection初始化实例，该connection参数应该是MySQLConnection类的一个实例。
+
+	在多数情况下，MySQLConnection.cursor()方法用于实例化一个MySQLCursor对象。
+
+9.5.2 方法 MySQLCursor.callproc(procname,args=())
+
+	该方法调用给定名称的储存过程。参数args序列必须包含每个参数一个条目，如常规预期的。结果是以输入序列修改过的副本返回。输入参数保持不变。输出和输入/输出参数可能被新值替代。
+
+	储存过程产生的结果集是自动抓取和以MySQLCursorBuffered实例储存。了解更多信息，查看stored_results()。
+
+	下面的例子展示怎样执行一个带两个参数的的储存过程，值相乘并返回乘积：
+
+	#乘法储存过程的定义：
+	#CREATE PROCEDURE multiply(IN pFac1 INT,IN pFac2 INT,OUT pProd INT)
+	#BEGIN
+	# SET pProd := pFac1 * pFac2;
+	#END
+
+	>>>args = (5,5,0)
+	>>>cursor.callproc('multiply',args)
+	('5','5','5L')
+	Connector/Python1.2.1和以上允许指定参数类型。要做到这点，就要指定一个参数为一个两元素的元组包含参数的值和类型。假设一个过程sp1()有这样的定义：
+
+	CREATE PROCEDURE sp1(IN pStr1 VARCHAR(20),IN pStr2 VARCHAR(20),OUT pConCat VARCHAR(100))
+	BEGIN
+
+		SET pConCat := CONCAT(pStr1,pStr2);
+	END
+
+	从Connection/Python中执行这个过程，指定OUT参数的类型，这样做：
+
+	args = ('ham','spam',(0,'CHAR'))
+	cursor.callproc('sp1',args)
+	print(cursor.fetchone())
+
+9.5.3 方法 MySQLCursor.close()
+
+	该方法关闭MySQL cursor，重置所有结果，并确保cursor对象没有引用的连接对象。
+
+	你每次使用完成cursor后用close()
+
+9.5.4 方法 MySQLCursor.execute(operation,params=None,multi=False)
+
+	该方法准备给定的数据operation（查询或者命令）。元组中发现的参数或者字典params被绑定到operation中的变量。变量被以%s(format)或者%(name)s(pyformat)参数风格指定。
+	
+	这个例子插入一个新雇员，然后选择他的数据：
+
+	insert = ("INSERT INTO employees (emp_no,first_name,last_name,hire_date)"          
+	          "VALUES (%s,%s,%s,%s)")
+	data = (2,'Jane','Doe',datetime.date(2012,3,23))cursor.execute(insert,data)
+	select = "SELECT * FROM employees WHERE emp_no = %(emp_no)s"
+	cursor.execute(select,{'emp_no':2})
+	
+	注意，数据值必要时需要将Python对象转换为MySQL明白的东西。在上个例子中，datetime.date()实例被转换为'2013-03-23'。
+
+	当multi被设置为True时，execute()可执行多个语句。它返回一个迭代器使得它能够为每个语句处理结果。注意，在这种情况下，使用参数不能很好的工作。在它自己上执行每个语句常是个好主意。
+	
+	下面的例子在一个operation中选择和插入数据并显示结果：
+
+	operation = 'SELECT 1;INSERT INTO t1 VALUES();SELECT 2'
+	for result in cursor.execute(operation):
+	if result.with_rows:
+		print("Statement '{}'has following rows:".format(result.statement))
+		print(result.fetchall())
+	else:
+		print("Affected row(s) by query '{}' was {}".format(result.statement,result.rowcount))
+
+	如果连接被配置为抓取警告，被operation生成的警告通过MySQLCursor.fetchwarnings()方法可用。
+
+	当multi为True时，返回一个迭代器。
+
+9.5.5 方法 MySQLCursor.executemany(operation,seq_parpams)
+
+	这个方法准备一个数据库operation（查询或者命令），然后对参数序列或者seq_params中的映射执行它。
+
+	executemany()通过迭代参数序列调用execute()方法。然而，插入数据可通过使用multipler-row 语法批量处理优化。
+
+	下面这个例子插入3条记录：
+
+	data = [('Jane',date(2005,2,12)),('Joe',date(2006,5,23)),('John',date(2010,10,3)),]
+	stmt = "INSERT INTO employees(first_name,hire_date) VALUES(%s,%s)"
+	cursor.executemany(stmt,data)
+
+	在上面的例子中，INSERT语句发送给MySQL会是：
+
+	INSERT INTO employees(first_name,hire_date)	VALUES('Jane','2005-02-12'),('Joe','2006-05-23'),('John','2010-10-03')
+
+	不可以使用executemany()方法执行多条语句。这样做会抛出一个InternalError异常。
+
+9.5.6 方法 MySQLCursor.fetchall()
+
+	该方法抓取所有或者剩余的查询结果集的行，以元组列表的形式返回。当没有行的时候，返回一个空列表。
+
+	下面的例子展示怎么获取第一个2行结果，然后获取剩余的行：
+
+	>>>cursor.execute("SELECT * FROM employees ORDER BY emp_no")
+	>>>head_rows = cursor.fetchmany(size=2)
+	>>>remaining_rows = cursor.fetchall()
+	
+	你必须在用相同连接执行新查询的之前抓取所有的行。
+
+9.5.7 方法 MySQLCursor.fetchmany(size=1)
+
+	该方法抓取一个查询结果的下个集合，返回一个元组的列表。当没有更多行可用时，返回一个空列表。
+
+	返回的行数有size参数指定，默认为1。当没有更多的行可用时，返回的行可能会少于参数指定的值。
+
+	注意，你必须在用相同连接执行新查询的之前抓取所有的行。
+
+9.5.8 方法 MySQLCursor.fetchone()
+
+	该方法获取查询结果集的下行，返回单个序列，或者当没有更多行可用时返回None。返回的元组包含MySQL服务器返回数据转换为Python对象。
+
+	fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCursor实例作为迭代器时。
+	
+	下面的例子展示了怎么使用fetchone()来处理一个查询结果，首先使用一个while循环，然后使用迭代器：
+	
+	#使用一个while循环
+	cursor.execute("SELECT * FROM employees")
+	row = cursor.fetchone()
+	while row is not None:
+		print(row)
+		row = cursor.fetchone()
+	
+	#使用cursor作为迭代器
+	
+	cursor.execute("SELECT * FROM employees")
+	for row in cursor:
+		print(row)
+
+	你必须在用相同连接执行新查询的之前抓取所有的行。
+
+9.5.9 方法 MySQLCursor.fetchwarnings()
+
+	该方法返回一个元组列表包含上一个执行语句生成的警告。使用连接的get_warnings属性来设置是否警告应被抓取。
+	下面的例子展示一个SELECT语句生成一个警告。
+	
+	>>> cnx.get_warnings = True
+	>>> cursor.execute('SELECT "a"+1')
+	>>> cursor.fetchall()
+	[(1.0,)]
+	>>> cursor.fetchwarnings()
+	[(u'Warning', 1292, u"Truncated incorrect DOUBLE value: 'a'")]
+
+	当发现警告时，有可能抛出错误。查看MySQLConnection.raise_on_warnings属性。
+
+9.5.10 方法 MySQLCursor.stored_results()
+
+	该方法返回一个列表迭代器对象，用于处理一个用callproc()方法调用储存过程后产生的结果集。
+
+	下面的例子执行一个储存过程，产生两个结果集，然后用stored_results()获取他们：
+	>>>cursor.callproc('sp1')()
+	>>>for result in cursor.stored_results():
+		print result.fetchall()
+	[(1,)][(2,)]
+
+	结果集一直可用，直到你执行另外的操作或者你调用另外的储存过程。
+
+9.5.11 属性 MySQLCursor.column_names
+
+	这个只读属性以Unicode字符串序列的形式返回结果集的列名。
+
+	下面的例子展示怎么从包含数据和用column_names为键的元组中创建一个字典：
+	
+	cursor.execute("SELECT last_name,first_name,hire_date "             
+	               "FROM employees WHERE emp_no = %s",(123,))row = dict(zip(cursor.column_names,cursor.fetchone()))
+	
+	print("{last_name},{first_name}:{hire_date}".format(row))
+
+9.5.12 属性 MySQLCursor.description
+
+	这个只读属性返回一个描述结果集中列的元组列表。每个元组包含值如下：
+
+	(column_name,
+	type,
+	None,
+	None,
+	None,
+	None,
+	null_ok,
+	column_flags)
+
+	下面的例子展示怎样解释description元组：
+
+	import mysql.connector
+	from mysql.connector import FieldType
+	...
+	cursor.execute("SELECT emp_no, last_name, hire_date "
+	               "FROM employees WHERE emp_no = %s", (123,))
+	
+	for i in range(len(cursor.description)):
+	print("Column {}:".format(i+1))
+	desc = cursor.description[i]
+	print("column_name = {}".format(desc[0]))
+	print("type = {} ({})".format(desc[1], FieldType.get_info(desc[1])))
+	print("null_ok = {}".format(desc[6]))
+	print("column_flags = {}".format(desc[7]))
+
+	输出结果：
+	Column 1:
+	column_name = emp_no
+	type = 3 (LONG)
+	null_ok = 0
+	column_flags = 20483
+	Column 2:
+	column_name = last_name
+	type = 253 (VAR_STRING)
+	null_ok = 0
+	column_flags = 4097
+	Column 3:
+	column_name = hire_date
+	type = 10 (DATE)
+	null_ok = 0
+	column_flags = 4225
+
+	column_flags值是constants.FieldFlag类的一个实例。查看怎么解释它，如下：
+	
+	>>>from mysql.connector import FieldFlag
+	>>>FieldFlag.desc
+
+9.5.13 属性 MySQLCursor.lastrowid
+
+	该只读属性返回最新修改行的row ID。例如，如果你在一个表中插入一条记录，该表包含一个AUTO_INCREMENT列，lastrowid返回这个新行的AUTO_INCREMENT值。查看5.3章，"Inserting Data Using Connector/Python"。
+
+9.5.14 属性 MySQLCursor.statement
+
+	该只读属性以字符串的形式返回最后执行的语句。该字符串能包含多条语句，如果一个多条语句字符串被执行的话。
+
+	该statement属性对应调试和显示什么被发送到MySQL服务器了很有用。
+
+9.5.15 属性 MySQLCursor.with_rows
+
+	当执行的操作的结果提供行，该只读属性返回True。
+
+	当有必要决定是否一条语句产生一个结果集和你需要抓取行时，with_rows属性很有用。下面的例子获取SELECT语句返回的行，但是仅仅报告UPDATE语句影响的行的值。
+
+	import mysql.connector
+	cnx = mysql.connector.connect(user='scott', database='test')
+	cursor = cnx.cursor()
+	operation = 'SELECT 1; UPDATE t1 SET c1 = 2; SELECT 2'
+	for result in cursor.execute(operation, multi=True):
+	if result.with_rows:
+		result.fetchall()
+	else:
+		print("Updated row(s): {}".format(result.rowcount))
+
+9.6 类 cursor.MySQLCursorBuffered
+
+	这个类从cursor.MySQLCursor继承而来，如果有需要，在operation被执行后自动接收行。
+
+	MySQLCursorBuffered在有两个查询的情况下很有用，小结果集，需要彼此组合或者计算。你可以在用连接的cursor()方法的时候使用buffered参数，或者使用buffered连接参数来默认为所有创建的cursors生成connection buffering。
+	
+	import mysql.connectorcnx = mysql.connector.connect()
+
+	#仅仅这个特定的cursor将缓存结果	
+	cnx.cursor(buffered=True)
+	
+	#所有的cursors将默认被缓存	
+	cnx2 = mysql.connector.connect(buffered=True)
+	
+	一个典型的使用案例，请见第6.1章,"Tutorial:Raise Employee's Salary Using a Buffering Cursor"
+	
+9.7 类cursor.MySQLCursorPrepared
+
+	一种方法是执行一个prepared SQL语句是使用PREPARE和EXECUTE语句。然而，对于反复用不同的数据执行相同语句的不同执行，使用二进制客户端/服务器协议来发送和接收数据更有效。了解更多该协议的信息，查看C API Prepared Statements.
+
+	第二种方法是创建一个cursor，在Connector/Python中开启用二进制协议prepared语句的执行。在两种情况下，连接对象的cursor()方法返回一个MySQLCursorPrepared对象，它继承至cursor.MySQLCursor。
+
+	 * 简单的语法是在cursor()方法使用一个prepared=True参数，该语法在Connector/Python 1.1.2中可用。
+
+	import mysql.connector
+	cnx = mysql.connector.connect(database='employees')
+	cursor = cnx.cursor(prepared=True)
+
+	 * 另外，创建一个MySQLCursorPrepared类的实例使用cursor()方法的cursor_class参数。MySQLCursorPrepared在Connector/Python 1.1.0中可用。
+
+	import mysql.connector	
+	from mysql.connector.cursor import MySQLCursorPrepared
+	
+	cnx = mysql.connector.connect(database='employees')
+	cursor = cnx.cursor(cursor_class=MySQLCursorPrepared)
+
+	一个MySQLCursorPrepared类实例的工作原理是这样的：
+
+	 * 首先你传递一个语句给cursor的execute()方法，它预备这条语句。对于后续execute()的调用，如果statement相同，则准备阶段跳过。
+	 * execute()方法带可选的第二个参数包含一个与statement中参数标记相关联的数据值的列表，他们必须是每个参数标记一个值。
+
+	例如：
+
+	cursor = cnx.cursor(prepared=True)
+	stmt = "SELECT fullname FROM employees WHERE id = %s" # (1)
+	cursor.execute(stmt,(5,))                             # (2)
+	# ... fetch data ...
+	cursor.execute(stmt,(10,))                            # (3)
+	# ... fetch data ...
+
+	(1) statement中的%s是一个参数标记，不要放引号吧参数标记括起来。
+	(2) 对于第一次调用execute()方法，cursor准备该statement。如果数据是在同一个调用中给出，它也执行该statement，你应该抓取数据。
+	(3) 对于后续的execute()调用，传递相同的SQL statement，cursor将跳过准备阶段。
+
+	被MySQLCursorPrepared执行的prepared statement可以使用format(%s)或者qmark(?)的参数化风格。它与被MySQLCursor执行的nonprepared statement的不同的地方是，哪个能使用format或者pyformat参数化风格。
+
+	同时使用多条prepered statements，要从MySQLCursorPrepared类实例化multiple cursors。
+
+9.8 类 constants.ClientFlag
+
+	这个类提供MySQL 客户端标志的定义的常量，能被用于在连接建立时配置会话。当导入mysql.connector时，ClientFlag类可用。
+
+	>>>import mysql.connector
+	>>>mysql.connector.ClientFlag.FOUND_ROWS
+
+	查看9.2.32章，"Method MySQLConnection.set_client_flags(flags)"和连接参数client_flag。
+	
+	ClientFlag类不能被实例化。
+
+9.9 类constants.FieldType
+
+	该类提供所有支持的MySQL field 或者数据类型。当处理原始数据或者定义你自己的转换器的时候，他们是有用的。field type随着每个cursor被储存在每个列的描述中。
+
+	下面的例子显示怎样在结果集中为每个列打印数据类型的名称。
+
+	from __future__ import print_function
+	import mysql.connector
+	from mysql.connector import FieldType
+
+	cnx = mysql.connector.connect(user='scott',database='test')
+	cursor = cnx.cursor()
+
+	cursor.execute("SELECT DATE(NOW()) AS `c1`,TIME(NOW()) AS `c2`,"
+				   "NOW() AS `c3`,'a string' AS `c4`,42 AS `c5`")
+
+	rows = cursor.fetchall()
+	for desc in cursor.description:
+		colname = desc[0]
+		coltype = desc[1]
+		print("Column {} has type {}".format(colname,FieldType.get_info(coltype)))
+	cursor.close()
+	cnx.close()
+
+	FieldType类不能被实例化。
+
+9.10 类 constant.SQLMode
+
+	该类提供所有已知的MySQL Server SQL Mode。它常用在连接时使用连接的sql_mode属性来设置SQL模式。查看9.2.44章，"Property MySQLConnection.sql_mode"。
+
+	SQLMode类不能被实例化。
+
+9.11 类constants.CharacterSet
+
+	该类提供所有已知的MySQL字符集和他们默认的collations。例如，查看9.2.31章，"Method MySQLConnection.set_charset_collation(charset=None,collation=None)"。
+	
+	CharacterSet类不能被实例化。
+	
+9.12 类 constants.RefreshOption
+
+	这个类定义了各个刷新操作。
+
+
+	 * RefreshOption.GRANT   - 刷新grant tables,像FLUSH PRIVILEGES
+	 * RefreshOption.LOG     - 刷新日志，像FLUSH LOGS
+	 * RefreshOption.TABLES  - 刷新表缓存，像FLUSH TABLES
+	 * RefreshOption.HOSTS   - 刷新host缓存，像FLUSH HOSTS
+	 * RefreshOption.STATUS  - 刷新状态变量，像FLUSH STATUS
+	 * RefreshOption.THREADS - 刷新线程缓存
+	 * RefreshOption.SLAVE   - 在一个从服务器上，重置主服务器信息并且重启从服务器，像RESET SLAVE
+	 * RefreshOption.MASTER  - 在一个主服务器上，移除二进制日志索引中列出的二进制日志文件并且截短这个索引文件，像RESET MASTER
+
+9.13 错误和异常
+
+	mysql.connector.errors模块为错误和被MySQL Connector/Python 抛出的警告定义了异常类。当你导入mysql.connector时，在此模块中定义的大多数类可用。
+
+	在此模块中定义的异常类大多遵循Python Database API Specification v2.0（PEP 249）。对于某些MySQL客户端或者服务器错误，抛出哪些异常并不是总是很清楚。讨论一个错误是否应该被一个打开的bug报告重新分类是件好事。
+
+	MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查看Server Error Codes and Messages）。下面的表显示SQLSTATE分类与Connector/Python抛出异常。然而，可以为每个服务器错误重新定义抛出哪个异常。注意,默认的异常是DatabaseError。
+
+	表9.1
+
+	+----------------+----------------------------+
+	| SQLSTATE Class | Connector/Python Exception |
+	+----------------+----------------------------+
+	|       02       | DataError                  |
+	+----------------+----------------------------+
+	|       02       | DataError                  |
+	+----------------+----------------------------+
+	|       07       | DatabaseError              |
+	+----------------+----------------------------+
+	|       08       | OperationalError           |
+	+----------------+----------------------------+
+	|       0A       | NotSupportedError          |
+	+----------------+----------------------------+
+	|       21       | DataError                  |
+	+----------------+----------------------------+
+	|       22       | DataError                  |
+	+----------------+----------------------------+
+	|       23       | IntegrityError             |
+	+----------------+----------------------------+
+	|       24       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       25       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       26       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       27       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       28       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       2A       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       2B       | DatabaseError              |
+	+----------------+----------------------------+
+	|       2C       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       2D       | DatabaseError              |
+	+----------------+----------------------------+
+	|       2E       | DatabaseError              |
+	+----------------+----------------------------+
+	|       33       | DatabaseError              |
+	+----------------+----------------------------+
+	|       34       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       35       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       37       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       3C       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       3D       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       3F       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       40       | InternalError              |
+	+----------------+----------------------------+
+	|       42       | ProgrammingError           |
+	+----------------+----------------------------+
+	|       44       | InternalError              |
+	+----------------+----------------------------+
+	|       HZ       | OperationalError           |
+	+----------------+----------------------------+
+	|       XA       | IntegrityError             |
+	+----------------+----------------------------+
+	|       0K       | OperationalError           |
+	+----------------+----------------------------+
+	|       HY       | DatabaseError              |
+	+----------------+----------------------------+
+
+
+9.13.1 模块 errorcode
+
+	该模块包含MySQL服务器和客户端错误代码，被定义为以错误号为值的模块属性。使用错误代码代替错误号能使得源代码会易读些。
+
+	>>>from mysql.connector import errorcode
+	>>>errorcode.ER_BAD_TABLE_ERROR
+	1051
+
+	查看Server Error Codes and Messages 和 Client Error Codes and Messages。
+
+
+9.13.2 异常 errors.Error
+
+	该异常是所有在errors模块内其他异常的基类。它能用于当except statement中抓取所有错误。
+
+	下面的例子显示我们怎么抓取语法错误：
+
+	import mysql.connector
+	try:
+		cnx = mysql.connector.connect(user='scott',database='employees')
+		cursor = cnx.cursor()
+		cursor.execute("SELECT * FORM employees") #查询语法错误
+		cnx.close()
+	except mysql.connector.Error as err:
+		print("Something went wrong: {}".format(err))
+
+	初始化异常支持几个可选的参数，亦即是msg,errno,values和sqlstate。他们所有都是可选的并且默认为None。errors.Error被Connector/Python内部用于抛出MySQL 客户端和服务器错误，不应被用于你的应用来抛异常。
+	
+	下面的例子显示当不使用参数或者使用一组参数时的结果：
+	
+	>>> from mysql.connector.errors import Error
+	>>> str(Error())
+	'Unknown error'
+
+	>>> str(Error("Oops! There was an error."))
+	'Oops! There was an error.'
+
+	>>> str(Error(errno=2006))
+	'2006: MySQL server has gone away'
+
+	>>> str(Error(errno=2002, values=('/tmp/mysql.sock', 2)))
+	"2002: Can't connect to local MySQL server through socket '/tmp/mysql.sock' (2)"
+
+	>>> str(Error(errno=1146, sqlstate='42S02', msg="Table 'test.spam' doesn't exist"))
+	"1146 (42S02): Table 'test.spam' doesn't exist"
+
+	使用错误号为1146的例子用于Connector/Python接收到MySQL 服务器一个错误的包的时候。信息被解析过并被传递给Error异常，如图所示。
+
+	每个Error 异常的子类能用前面提到的参数初始化。此外，每个实例含有errno,msg和sqlstate属性，可以用于你的代码中。
+
+	下面的例子显示怎么处理当删除一个不存在的表（DROP TABLE 语句中不包含IF EXISTS引起的）的错误：
+	
+	import mysql.connector
+	from mysql.connector import errorcode
+	cnx = mysql.connector.connect(user='scott', database='test')
+	try:
+		cur.execute("DROP TABLE spam")
+	except mysql.connector.Error as err:
+		if err.errno == errorcode.ER_BAD_TABLE_ERROR:
+			print("Creating table spam")
+		else:
+		raise
+
+	在Connector/Python 1.1.1之前，传递给errors.Error()的原信息以这样的方式不会保存，它可以被检索。相反，Error.msg属性被带错误号和SQLSTATE 值格式化。随着1.1.1，仅原信息被保存在Error.msg属性中。格式化的值连同错误号和SQLSTATE 值可以通过打印或者错误对象的字符串表现形式来获得。例如：
+
+	try:
+		conn = mysql.connector.connect(database='baddb')
+	except mysql.connector.Error as e:
+		print "Error code:",e.errno
+		print "SQLSTATE value:",e.sqlstate
+		print "Error message:",e.msg
+		print "Error:",es = str(e)
+		print "Error:",s
+	
+	errors.Error是Python StandardError的一个子类。
+
+9.13.3 异常 errors.DataError
+
+	当数据有问题时，抛出这个异常。例如设置不能为NULL的列为NULL，超出列的取值范围，除以零，列数不匹配值数等等。
+	
+	errors.DataError是errors.DatabaseError的一个子类。
+
+9.13.4 异常 errors.DatabaseError
+
+	该异常是不匹配其他异常的任何MySQL错误的默认异常。
+	
+	errors.DatabaseError是errors.Error的一个子类。
+
+9.13.5 异常 errors.IntegrityError
+
+	当数据关系的完整性收到影响时，抛出该异常。例如，插入重复的键或者一个外键约束将失败。
+
+	下面的例子显示重复的键错误被以IntegrityError异常被抛出：
+
+	cursor.execute("CREATE TABLE t1 (id int,PRIMARY KEY (id))")
+	try:
+		cursor.execute("INSERT INTO t1 (id) VALUES (1)")
+		cursor.execute("INSERT INTO t1 (id) VALUES (1)")
+	except mysql.connector.IntegrityError as err:
+		print("Error:{}".format(err))
+
+	errors.IntegrityError是DatabaseError的一个子类。
+
+9.13.6 异常 errors.InterfaceError
+
+	源自Connector/Python本身的错误抛出该异常。与MySQL服务器无关。
+	
+	errors.InterfaceError是errors.Error的一个子类。
+
+9.13.7 异常 errors.InternalError
+
+	当MySQL服务器遇到一个内部错误时抛出该异常。例如，当发生死锁时。
+
+	errors.InternalError是errors.DatabaseError的一个子类。
+
+9.13.8 异常 errors.NotSupportedError
+
+	当使用的一些特性在该MySQL版本下不支持返回错误时，抛出该异常。当使用函数或者语句不被储存例程支持时，也抛出该异常。
+	
+	errors.NotSupportedError是errors.DatabaseError的一个子类。
+
+9.13.9 异常 errors.OperationalError
+
+	与MySQL的操作相关的错误抛出该异常。例如，太多的连接，一个主机名不能被解析，失败的握手，服务器正被关闭，通信错误。
+	
+	errors.OperationalError是errors.DatabaseError的一个子类。
+
+9.13.10 异常 errors.PoolError
+
+	连接池错误抛出该异常。
+
+	errors.PoolError是errors.Error的一个子类。
+
+9.13.11 异常 errors.ProgrammingError
+
+	编程错误抛出该异常，例如，当在你的SQL中有一个语法错误或者一个表没发现时。
+
+	下面的例子显示怎么处理语法错误：
+
+	try:
+		cursor.execute("CREATE DESK t1 (id int,PRIMARY KEY (id))")
+	except mysql.connector.ProgrammingError as err:
+	if err.errno == errorcode.ER_SYNTAX_ERROR:
+		print("Check your syntax!")
+	else:
+		print("Error:{}".format(err))
+	
+	errors.ProgrammingError是errors.DatabaseError的一个子类。
+	
+9.13.12 异常 errors.Warning
+
+	该异常用于报告重要的警告，然而，Connector/Python不使用它。它是为了兼容Python Database Specification v2.0(PEP-249)。
+
+	当你的查询产生警告时，考虑使用更严格的Server SQL Modes或者raise_on_warning连接参数来使得Connector/Python抛出错误。
+	
+	errors.Warning是Python StandardError的一个子类。
+
+9.13.13 函数 errors.custom_error_exception(error=None,exception=None)
+
+	该方法定义了为MySQL服务器错误自定义异常并返回当前的自定义。
+
+	如果error是一个MySQL服务器的错误号，你必须也需要传递exception类。error参数可以是一个字典，在这种情况下键是服务器错误号，值是被抛出的异常的类。
+	
+	用空字典重置自定义：
+	
+	import mysql.connectorfrom mysql.connector import errorcode
+
+	#服务器1028错误抛出一个DatabaseError
+	mysql.connector.custom_error_exception(1028,mysql.connector.DatabaseError)
+	
+	#或者使用字典
+	mysql.connector.custom_error_excepiton({1028:mysql.connector.DatabaseError,1029:mysql.connector.OperationalError,})
+
+	#传递一个空字典，重置自定义
+	mysql.connector.custom_error_exception({})
