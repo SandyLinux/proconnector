@@ -1,0 +1,10 @@
+﻿9.8 类 constants.ClientFlag
+
+	这个类提供MySQL 客户端标志的定义的常量，能被用于在连接建立时配置会话。当导入mysql.connector时，ClientFlag类可用。
+
+	>>>import mysql.connector
+	>>>mysql.connector.ClientFlag.FOUND_ROWS
+
+	查看9.2.32章，"Method MySQLConnection.set_client_flags(flags)"和连接参数client_flag。
+	
+	ClientFlag类不能被实例化。
