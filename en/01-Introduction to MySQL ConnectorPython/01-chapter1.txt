@@ -1,0 +1,32 @@
+Chapter 1 Introduction to MySQL Connector/Python
+
+MySQL Connector/Python enables Python programs to access MySQL databases, using an API that is compliant with the Python Database API Specification v2.0 (PEP 249). It is written in pure Python and does not have any dependencies except for the Python Standard Library.
+
+For notes detailing the changes in each release of Connector/Python, see MySQL Connector/Python Release Notes.
+
+MySQL Connector/Python includes support for:
+	* Almost all features provided by MySQL Server up to and including MySQL Server version 5.5.
+	* Converting parameter values back and forth between Python and MySQL data types, for example Python datetime and MySQL DATETIME. You can turn automatic conversion on for convenience, or off for optimal performance.
+	* All MySQL extensions to standard SQL syntax.
+	* Protocol compression, which enables compressing the data stream between the client and server.
+	* Connections using TCP/IP sockets and on Unix using Unix sockets.
+	* Secure TCP/IP connections using SSL.
+	* Self-contained driver. Connector/Python does not require the MySQL client library or any Python modules outside the standard library.
+
+MySQL Connector/Python 1.1 supports Python from version 2.6 through 2.7, and Python 3.1 and later. MySQL Connector/Python 1.0 supports Python from version 2.4 through 2.7, and Python 3.1 and later.
+
+Note:
+	Connector/Python does not support the old MySQL Server authentication methods, which means that MySQL versions prior to 4.1 will not work.
+
+
+
+
+
+
+
+
+
+
+
+
+

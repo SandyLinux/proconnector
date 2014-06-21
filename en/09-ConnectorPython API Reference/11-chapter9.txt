@@ -1,0 +1,5 @@
+9.11 Class constants.CharacterSet
+
+This class provides all known MySQL characters sets and their default collations. For examples, see Section 9.2.31, “Method MySQLConnection.set_charset_collation(charset=None, collation=None)”.
+
+The CharacterSet class cannot be instantiated.

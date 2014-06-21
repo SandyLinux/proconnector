@@ -1,0 +1,12 @@
+9.8 Class constants.ClientFlag
+
+This class provides constants defining MySQL client flags that can be used when the connection is established to configure the session. The ClientFlag class is available when importing mysql.connector.
+
+
+>>> import mysql.connector
+>>> mysql.connector.ClientFlag.FOUND_ROWS
+2
+
+See Section 9.2.32, “Method MySQLConnection.set_client_flags(flags)” and the connection argument client_flag.
+
+The ClientFlag class cannot be instantiated.

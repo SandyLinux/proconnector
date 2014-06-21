@@ -1,0 +1,21 @@
+8.2 Connector/Python Fabric Support
+
+MySQL Fabric is a system for managing a farm of MySQL servers (and other components). Fabric provides an extensible and easy to use system for managing a MySQL deployment for sharding and high-availability.
+
+Connector/Python 1.2.0 and up supports Fabric and provides these capabilities:
+
+  * Requesting a connection to a MySQL server managed by Fabric is as transparent as possible to users already familiar with Connector/Python.
+
+  * Connector/Python is able to get a MySQL server connection given a high-availability group and a mode specifying whether the connection is read-only or also permits updates (read-write).
+
+  * Connector/Python supports sharding and is able to find the correct MySQL server for a given table or tables and key based on scope (local or global) and mode (read-only or read-write). RANGE and HASH mechanisms are supported transparently to the user.
+
+  * Among secondary MySQL servers in the same group, load balancing of read-only operations occurs based on server weight.
+
+  * Faulty MySQL servers are reported to Fabric, and failover is supported when failure occurs for a server in a group.
+
+  * Connector/Python caches information coming from Fabric to speed up operations. Failures connecting to a MySQL server reset this cache. The time to live for cached information can be set by Fabric, or a default is used otherwise.
+
+  * Fabric support applies to versions of Python supported by Connector/Python itself (see Chapter 3, Connector/Python Versions). In particular, you can use Connector/Python with Python 3.1 and later to establish Fabric connections, even though Fabric does not support Python 3.
+
+For more information, see MySQL Fabric.

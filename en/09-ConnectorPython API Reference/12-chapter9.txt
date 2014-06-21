@@ -1,0 +1,35 @@
+9.12 Class constants.RefreshOption
+
+This class performs various flush operations.
+
+	* RefreshOption.GRANT
+
+	  Refresh the grant tables, like FLUSH PRIVILEGES.
+
+	* RefreshOption.LOG
+
+	  Flush the logs, like FLUSH LOGS.
+
+	* RefreshOption.TABLES
+
+	  Flush the table cache, like FLUSH TABLES.
+
+	* RefreshOption.HOSTS
+
+	 Flush the host cache, like FLUSH HOSTS.
+
+	* RefreshOption.STATUS
+
+	  Reset status variables, like FLUSH STATUS.
+
+	* RefreshOption.THREADS
+
+	  Flush the thread cache.
+
+	* RefreshOption.SLAVE
+
+	  On a slave replication server, reset the master server information and restart the slave, like RESET SLAVE.
+
+	* RefreshOption.MASTER
+
+	  On a master replication server, remove the binary log files listed in the binary log index and truncate the index file, like RESET MASTER.

@@ -1,0 +1,26 @@
+4.3 Installing Connector/Python Source Distribution on Microsoft Windows
+
+On Microsoft Windows systems, you can download Connector/Python as a Zip archive from http://dev.mysql.com/downloads/connector/python/.
+
+Make sure that the Python executable is available in the Windows %PATH% setting. For more information about installation and configuration of Python on Windows, see the section Using Python on Windows in the Python documentation.
+
+To install Connector/Python from the .zip file, download the latest version and follow these steps:
+
+	1.To use a Zip archive, unpack it in the intended installation directory (for example, C:\mysql-connector\) using WinZip or another tool that can read .zip files.
+
+	2.Start a console window (or a DOS window) and change location to the folder where you unpacked the Connector/Python Zip archive:
+
+	  shell> cd C:\mysql-connector\
+
+	3.Inside the Connector/Python folder, perform the installation using this command:
+
+	  shell> python setup.py install
+
+On Windows, Connector/Python is installed in the default location C:\PythonX.Y\Lib\site-packages\ where X.Y is the Python version you used to install the connector.
+
+If you are not sure where Connector/Python was installed, do the following to determine the location:
+
+shell> python
+>>> from distutils.sysconfig import get_python_lib
+>>> print get_python_lib()            # Python v2.x
+>>> print(get_python_lib())           # Python v3.x

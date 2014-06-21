@@ -1,0 +1,45 @@
+9.7 Class cursor.MySQLCursorPrepared
+
+One way to execute a prepared SQL statement is by use of the PREPARE and EXECUTE statements. However, to repeatedly execute the same statement with different data for different executions, it is more efficient to use the binary client/server protocol to send and receive data. For information about this protocol, see C API Prepared Statements.
+
+There are two ways to create a cursor that within Connector/Python enables execution of prepared statements using the binary protocol. In both cases, the cursor() method of the connection object returns a MySQLCursorPrepared object, which inherits from cursor.MySQLCursor.
+
+	* The simpler syntax uses a prepared=True argument to the cursor() method. This syntax is available as of Connector/Python 1.1.2.
+
+	  import mysql.connector
+
+	  cnx = mysql.connector.connect(database='employees')
+	  cursor = cnx.cursor(prepared=True)
+
+	* Alternatively, create an instance of the MySQLCursorPrepared class using the cursor_class argument to the cursor() method. MySQLCursorPrepared is available as of Connector/Python 1.1.0.
+
+	  import mysql.connector
+	  from mysql.connector.cursor import MySQLCursorPrepared
+
+	  cnx = mysql.connector.connect(database='employees')
+	  cursor = cnx.cursor(cursor_class=MySQLCursorPrepared)
+
+A cursor instantiated from the MySQLCursorPrepared class works like this:
+
+	* The first time you pass a statement to the cursor's execute() method, it prepares the statement. For subsequent invocations of execute(), the prepare phase is skipped if the statement is the same.
+
+	* The execute() method takes an optional second argument containing a list of data values to associate with parameter markers in the statement. If the list argument is present, there must be one value per parameter marker.
+
+Example:
+
+cursor = cnx.cursor(prepared=True)
+stmt = "SELECT fullname FROM employees WHERE id = %s" # (1)
+cursor.execute(stmt, (5,))                            # (2)
+# ... fetch data ...
+cursor.execute(stmt, (10,))                           # (3)
+# ... fetch data ...
+
+	1.The %s within the statement is a parameter marker. Do not put quote marks around parameter markers.
+
+	2.For the first call to the execute() method, the cursor prepares the statement. If data is given in the same call, it also executes the statement and you should fetch the data.
+
+	3.For subsequent execute() calls that pass the same SQL statement, the cursor skips the prepare phase.
+
+Prepared statements executed with MySQLCursorPrepared can use the format (%s) or qmark (?) parameterization style. This differs from nonprepared statements executed with MySQLCursor, which can use the format or pyformat parameterization style.
+
+To use multiple prepared statements simultaneously, instantiate multiple cursors from the MySQLCursorPrepared class.

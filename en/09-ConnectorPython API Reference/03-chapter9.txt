@@ -1,0 +1,101 @@
+9.3 Class pooling.MySQLConnectionPool
+
+9.3.1 Constructor pooling.MySQLConnectionPool
+9.3.2 Method MySQLConnectionPool.add_connection()
+9.3.3 Method MySQLConnectionPool.get_connection()
+9.3.4 Method MySQLConnectionPool.set_config()
+9.3.5 Property MySQLConnectionPool.pool_name
+This class provides for the instantiation and management of connection pools.
+
+9.3.1 Constructor pooling.MySQLConnectionPool
+
+Syntax:
+
+MySQLConnectionPool(pool_name=None,
+                    pool_size=5,
+                    pool_reset_session=True,
+                    **kwargs)
+This constructor instantiates an object that manages a connection pool.
+
+Arguments:
+
+  * pool_name: The pool name. If this argument is not given, Connector/Python automatically generates the name, composed from whichever of the host, port, user, and database connection arguments are given in kwargs, in that order.
+
+    It is not an error for multiple pools to have the same name. An application that must distinguish pools by their pool_name property should create each pool with a distinct name.
+
+  * pool_size: The pool size. If this argument is not given, the default is 5.
+
+  * pool_reset_session: Whether to reset session variables when the connection is returned to the pool. This argument was added in Connector/Python 1.1.5. Before 1.1.5, session variables are not reset.
+
+  * kwargs: Optional additional connection arguments, as described in Chapter 7, Connector/Python Connection Arguments.
+
+Example:
+
+dbconfig = {
+  "database": "test",
+  "user":     "joe",
+}
+
+cnxpool = mysql.connector.pooling.MySQLConnectionPool(pool_name = "mypool",
+                                                      pool_size = 3,
+                                                      **dbconfig)
+9.3.2 Method MySQLConnectionPool.add_connection()
+
+Syntax:
+
+cnxpool.add_connection(cnx = None)
+
+This method adds a new or existing MySQLConnection to the pool, or raises a PoolError if the pool is full.
+
+Arguments:
+
+  * cnx: The MySQLConnection object to be added to the pool. If this argument is missing, the pool creates a new connection and adds it.
+
+Example:
+
+cnxpool.add_connection()    # add new connection to pool
+cnxpool.add_connection(cnx) # add existing connection to pool
+
+9.3.3 Method MySQLConnectionPool.get_connection()
+
+Syntax:
+
+cnxpool.get_connection()
+This method returns a connection from the pool, or raises a PoolError if no connections are available.
+
+Example:
+
+cnx = cnxpool.get_connection()
+
+9.3.4 Method MySQLConnectionPool.set_config()
+
+Syntax:
+
+cnxpool.set_config(**kwargs)
+
+This method sets the configuration parameters for connections in the pool. Connections requested from the pool after the configuration change use the new parameters. Connections obtained before the change remain unaffected, but when they are closed (returned to the pool) are reopened with the new parameters before being returned by the pool for subsequent connection requests.
+
+Arguments:
+
+  * kwargs: Connection arguments.
+
+Example:
+
+dbconfig = {
+  "database": "performance_schema",
+  "user":     "admin",
+  "password": "secret",
+}
+
+cnxpool.set_config(**dbconfig)
+
+9.3.5 Property MySQLConnectionPool.pool_name
+
+Syntax:
+
+cnxpool.pool_name
+This property returns the connection pool name.
+
+Example:
+
+name = cnxpool.pool_name

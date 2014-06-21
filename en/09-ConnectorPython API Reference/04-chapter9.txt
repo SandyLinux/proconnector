@@ -1,0 +1,62 @@
+9.4 Class pooling.PooledMySQLConnection
+
+9.4.1 Constructor pooling.PooledMySQLConnection
+9.4.2 Method PooledMySQLConnection.close()
+9.4.3 Method PooledMySQLConnection.config()
+9.4.4 Property PooledMySQLConnection.pool_name
+
+This class is used by MySQLConnectionPool to return a pooled connection instance. It is also the class used for connections obtained with calls to the connect() method that name a connection pool (see Section 8.1, “Connector/Python Connection Pooling”).
+
+PooledMySQLConnection pooled connection objects are similar to MySQLConnection unpooled connection objects, with these differences:
+
+	* To release a pooled connection obtained from a connection pool, invoke its close() method, just as for any unpooled connection. However, for a pooled connection, close() does not actually close the connection but returns it to the pool and makes it available for subsequent connection requests.
+
+	* A pooled connection cannot be reconfigured using its config() method. Connection changes must be done through the pool object itself, as described shortly.
+
+	* A pooled connection has a pool_name property that returns the pool name.
+
+9.4.1 Constructor pooling.PooledMySQLConnection
+
+Syntax:
+
+PooledMySQLConnection(cnxpool, cnx)
+
+This constructor takes connection pool and connection arguments and returns a pooled connection. It is used by the MySQLConnectionPool class.
+
+Arguments:
+
+	* cnxpool: A MySQLConnectionPool instance.
+
+	* cnx: A MySQLConnection instance.
+
+Example:
+
+pcnx = mysql.connector.pooling.PooledMySQLConnection(cnxpool, cnx)
+
+9.4.2 Method PooledMySQLConnection.close()
+
+Syntax:
+
+cnx.close()
+
+Returns a pooled connection to its connection pool.
+
+For a pooled connection, close() does not actually close it but returns it to the pool and makes it available for subsequent connection requests.
+
+If the pool configuration parameters are changed, a returned connection is closed and reopened with the new configuration before being returned from the pool again in response to a connection request.
+
+9.4.3 Method PooledMySQLConnection.config()
+
+For pooled connections, the config() method raises a PoolError exception. Configuration for pooled connections should be done using the pool object.
+
+9.4.4 Property PooledMySQLConnection.pool_name
+
+Syntax:
+
+cnx.pool_name
+This property returns the name of the connection pool to which the connection belongs.
+
+Example:
+
+cnx = cnxpool.get_connection()
+name = cnx.pool_name

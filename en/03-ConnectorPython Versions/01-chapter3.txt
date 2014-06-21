@@ -1,0 +1,28 @@
+Chapter 3 Connector/Python Versions
+
+The MySQL Connector/Python 1.1 is the current development series.
+
+The MySQL Connector/Python 1.0 series went through a series of beta releases, leading to the first generally available (GA) version of 1.0.7. Any development releases prior to the GA version (1.0.7) are no longer supported.
+
+The following table summarizes the available Connector/Python versions:
+
+Table 3.1 Connector/Python Version Reference
+
++------------------+--------------+------------------------+------------------------------+
+| Connector/Python | MySQL Server |   Python Versions      | Support Status for Connector |                            
+|      Version     |  Versions    |                        |                              |
++------------------+--------------+------------------------+------------------------------+
+|         1.1      | 5.7,5.6,5.5  |  3.1 and later,2.7,2.6 |      Recommended version     |
+|                  |(5.1,5.0,4.1) |                        |                              |
++------------------+--------------+------------------------+------------------------------+
+|         1.0      | 5.7,5.6,5.5  |  3.1 and later,2.7,2.6 |      Recommended version     |
+|                  |(5.1,5.0,4.1) |       (2.5,2.4)        |                              |
++------------------+---------------------------------------+------------------------------+
+
+Note:
+
+	MySQL server and Python versions within parentheses are known to work with Connector/Python, but are not officially supported. Bugs might not get fixed for those versions.
+
+Note:
+
+	Connector/Python does not support the old MySQL Server authentication methods, which means that MySQL versions prior to 4.1 will not work.

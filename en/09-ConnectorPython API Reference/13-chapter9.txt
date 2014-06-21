@@ -1,0 +1,271 @@
+9.13 Errors and Exceptions
+
+9.13.1 Module errorcode
+9.13.2 Exception errors.Error
+9.13.3 Exception errors.DataError
+9.13.4 Exception errors.DatabaseError
+9.13.5 Exception errors.IntegrityError
+9.13.6 Exception errors.InterfaceError
+9.13.7 Exception errors.InternalError
+9.13.8 Exception errors.NotSupportedError
+9.13.9 Exception errors.OperationalError
+9.13.10 Exception errors.PoolError
+9.13.11 Exception errors.ProgrammingError
+9.13.12 Exception errors.Warning
+9.13.13 Function errors.custom_error_exception(error=None, exception=None)
+
+The mysql.connector.errors module defines exception classes for errors and warnings raised by MySQL Connector/Python. Most classes defined in this module are available when you import mysql.connector.
+
+The exception classes defined in this module mostly follow the Python Database API Specification v2.0 (PEP 249). For some MySQL client or server errors it is not always clear which exception to raise. It is good to discuss whether an error should be reclassified by opening a bug report.
+
+MySQL Server errors are mapped with Python exception based on their SQLSTATE value (see Server Error Codes and Messages). The following table shows the SQLSTATE classes and the exception Connector/Python raises. It is, however, possible to redefine which exception is raised for each server error. Note that the default exception is DatabaseError.
+
+Table 9.1 
++----------------+----------------------------+
+| SQLSTATE Class | Connector/Python Exception |
++----------------+----------------------------+
+| 02	           | DataError                  |
++----------------+----------------------------+
+| 02	           | DataError                  |
++----------------+----------------------------+
+| 07	           | DatabaseError              |
++----------------+----------------------------+
+| 08	           | OperationalError           |
++----------------+----------------------------+
+| 0A	           | NotSupportedError          |
++----------------+----------------------------+
+| 21	           | DataError                  |
++----------------+----------------------------+
+| 22	           | DataError                  |
++----------------+----------------------------+
+| 23	           | IntegrityError             |
++----------------+----------------------------+
+| 24	           | ProgrammingError           |
++----------------+----------------------------+
+| 25	           | ProgrammingError           |
++----------------+----------------------------+
+| 26	           | ProgrammingError           |
++----------------+----------------------------+
+| 27	           | ProgrammingError           |
++----------------+----------------------------+
+| 28	           | ProgrammingError           |
++----------------+----------------------------+
+| 2A	           | ProgrammingError           |
++----------------+----------------------------+
+| 2B	           | DatabaseError              |
++----------------+----------------------------+
+| 2C	           | ProgrammingError           |
++----------------+----------------------------+
+| 2D	           | DatabaseError              |
++----------------+----------------------------+
+| 2E	           | DatabaseError              |
++----------------+----------------------------+
+| 33	           | DatabaseError              |
++----------------+----------------------------+
+| 34	           | ProgrammingError           | 
++----------------+----------------------------+
+| 35	           | ProgrammingError           |
++----------------+----------------------------+
+| 37	           | ProgrammingError           |
++----------------+----------------------------+
+| 3C	           | ProgrammingError           |
++----------------+----------------------------+
+| 3D	           | ProgrammingError           |
++----------------+----------------------------+
+| 3F	           | ProgrammingError           |
++----------------+----------------------------+
+| 40	           | InternalError              |
++----------------+----------------------------+
+| 42	           | ProgrammingError           |
++----------------+----------------------------+
+| 44	           | InternalError              |
++----------------+----------------------------+
+| HZ             | OperationalError           |
++----------------+----------------------------+
+| XA	           | IntegrityError             |
++----------------+----------------------------+
+| 0K	           | OperationalError           |
++----------------+----------------------------+
+| HY	           | DatabaseError              |
++----------------+----------------------------+
+
+9.13.1 Module errorcode
+
+This module contains both MySQL server and client error codes defined as module attributes with the error number as value. Using error codes instead of error numbers could make reading the source code a bit easier.
+
+
+>>> from mysql.connector import errorcode
+>>> errorcode.ER_BAD_TABLE_ERROR
+1051
+
+See Server Error Codes and Messages and Client Error Codes and Messages.
+
+9.13.2 Exception errors.Error
+
+This exception is the base class for all other exceptions in the errors module. It can be used to catch all errors in a single except statement.
+
+The following example shows how we could catch syntax errors:
+
+import mysql.connector
+try:
+  cnx = mysql.connector.connect(user='scott', database='employees')
+  cursor = cnx.cursor()
+  cursor.execute("SELECT * FORM employees")   # Syntax error in query
+  cnx.close()
+except mysql.connector.Error as err:
+  print("Something went wrong: {}".format(err))
+
+Initializing the exception supports a few optional arguments, namely msg, errno, values and sqlstate. All of them are optional and default to None. errors.Error is internally used by Connector/Python to raise MySQL client and server errors and should not be used by your application to raise exceptions.
+
+The following examples show the result when using no arguments or a combination of the arguments:
+
+
+>>> from mysql.connector.errors import Error
+>>> str(Error())
+'Unknown error'
+
+>>> str(Error("Oops! There was an error."))
+'Oops! There was an error.'
+
+>>> str(Error(errno=2006))
+'2006: MySQL server has gone away'
+
+>>> str(Error(errno=2002, values=('/tmp/mysql.sock', 2)))
+"2002: Can't connect to local MySQL server through socket '/tmp/mysql.sock' (2)"
+
+>>> str(Error(errno=1146, sqlstate='42S02', msg="Table 'test.spam' doesn't exist"))
+"1146 (42S02): Table 'test.spam' doesn't exist"
+
+The example which uses error number 1146 is used when Connector/Python receives an error packet from the MySQL Server. The information is parsed and passed to the Error exception as shown.
+
+Each exception subclassing from Error can be initialized using the previously mentioned arguments. Additionally, each instance has the attributes errno, msg and sqlstate which can be used in your code.
+
+The following example shows how to handle errors when dropping a table which does not exist (when the DROP TABLE statement does not include a IF EXISTS clause):
+
+import mysql.connector
+from mysql.connector import errorcode
+
+cnx = mysql.connector.connect(user='scott', database='test')
+try:
+  cur.execute("DROP TABLE spam")
+except mysql.connector.Error as err:
+  if err.errno == errorcode.ER_BAD_TABLE_ERROR:
+    print("Creating table spam")
+  else:
+    raise
+
+Prior to Connector/Python 1.1.1, the original message passed to errors.Error() is not saved in such a way that it could be retrieved. Instead, the Error.msg attribute was formatted with the error number and SQLSTATE value. As of 1.1.1, only the original message is saved in the Error.msg attribute. The formatted value together with the error number and SQLSTATE value can be obtained by printing or getting the string representation of the error object. Example:
+
+try:
+  conn = mysql.connector.connect(database = "baddb")
+except mysql.connector.Error as e:
+  print "Error code:", e.errno        # error number
+  print "SQLSTATE value:", e.sqlstate # SQLSTATE value
+  print "Error message:", e.msg       # error message
+  print "Error:", e                   # errno, sqlstate, msg values
+  s = str(e)
+  print "Error:", s                   # errno, sqlstate, msg values
+
+errors.Error is a subclass of the Python StandardError.
+
+9.13.3 Exception errors.DataError
+
+This exception is raised when there were problems with the data. Examples are a column set to NULL that cannot be NULL, out-of-range values for a column, division by zero, column count does not match value count, and so on.
+
+errors.DataError is a subclass of errors.DatabaseError.
+
+9.13.4 Exception errors.DatabaseError
+
+This exception is the default for any MySQL error which does not fit the other exceptions.
+
+errors.DatabaseError is a subclass of errors.Error.
+
+9.13.5 Exception errors.IntegrityError
+
+This exception is raised when the relational integrity of the data is affected. For example, a duplicate key was inserted or a foreign key constraint would fail.
+
+The following example shows a duplicate key error raised as IntegrityError:
+
+cursor.execute("CREATE TABLE t1 (id int, PRIMARY KEY (id))")
+try:
+  cursor.execute("INSERT INTO t1 (id) VALUES (1)")
+  cursor.execute("INSERT INTO t1 (id) VALUES (1)")
+except mysql.connector.IntegrityError as err:
+  print("Error: {}".format(err))
+
+errors.IntegrityError is a subclass of errors.DatabaseError.
+
+9.13.6 Exception errors.InterfaceError
+
+This exception is raised for errors originating from Connector/Python itself, not related to the MySQL server.
+
+errors.InterfaceError is a subclass of errors.Error.
+
+9.13.7 Exception errors.InternalError
+
+This exception is raised when the MySQL server encounters an internal error, for example, when a deadlock occurred.
+
+errors.InternalError is a subclass of errors.DatabaseError.
+
+9.13.8 Exception errors.NotSupportedError
+
+This exception is raised when some feature was used that is not supported by the version of MySQL that returned the error. It is also raised when using functions or statements that are not supported by stored routines.
+
+errors.NotSupportedError is a subclass of errors.DatabaseError.
+
+9.13.9 Exception errors.OperationalError
+
+This exception is raised for errors which are related to MySQL's operations. For example: too many connections; a host name could not be resolved; bad handshake; server is shutting down, communication errors.
+
+errors.OperationalError is a subclass of errors.DatabaseError.
+
+9.13.10 Exception errors.PoolError
+
+This exception is raised for connection pool errors. errors.PoolError is a subclass of errors.Error.
+
+9.13.11 Exception errors.ProgrammingError
+
+This exception is raised on programming errors, for example when you have a syntax error in your SQL or a table was not found.
+
+The following example shows how to handle syntax errors:
+
+try:
+  cursor.execute("CREATE DESK t1 (id int, PRIMARY KEY (id))")
+except mysql.connector.ProgrammingError as err:
+  if err.errno == errorcode.ER_SYNTAX_ERROR:
+    print("Check your syntax!")
+  else:
+    print("Error: {}".format(err))
+    
+errors.ProgrammingError is a subclass of errors.DatabaseError.
+
+9.13.12 Exception errors.Warning
+
+This exception is used for reporting important warnings, however, Connector/Python does not use it. It is included to be compliant with the Python Database Specification v2.0 (PEP-249).
+
+Consider using either more strict Server SQL Modes or the raise_on_warnings connection argument to make Connector/Python raise errors when your queries produce warnings.
+
+errors.Warning is a subclass of the Python StandardError.
+
+9.13.13 Function errors.custom_error_exception(error=None, exception=None)
+
+This method defines custom exceptions for MySQL server errors and returns current customizations.
+
+If error is a MySQL Server error number, you must also pass the exception class. The error argument can be a dictionary, in which case the key is the server error number, and value the class of the exception to be raised.
+
+To reset the customizations, supply an empty dictionary.
+
+import mysql.connector
+from mysql.connector import errorcode
+
+# Server error 1028 should raise a DatabaseError
+mysql.connector.custom_error_exception(1028, mysql.connector.DatabaseError)
+
+# Or using a dictionary:
+mysql.connector.custom_error_exception({
+  1028: mysql.connector.DatabaseError,
+  1029: mysql.connector.OperationalError,
+})
+
+# To reset, pass an empty dictionary:
+mysql.connector.custom_error_exception({})

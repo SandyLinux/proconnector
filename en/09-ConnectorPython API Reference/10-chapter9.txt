@@ -1,0 +1,5 @@
+9.10 Class constants.SQLMode
+
+This class provides all known MySQL Server SQL Modes. It is mostly used when setting the SQL modes at connection time using the connection's sql_mode property. See Section 9.2.44, “Property MySQLConnection.sql_mode”.
+
+The SQLMode class cannot be instantiated.

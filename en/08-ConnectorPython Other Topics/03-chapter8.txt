@@ -1,0 +1,44 @@
+8.3 Connector/Python Django Backend
+
+Connector/Python 1.1.1 and up includes a mysql.connector.django module that provides a Django backend for MySQL. This backend supports new features found in MySQL 5.6 such as fractional seconds support for temporal data types.
+
+Django Configuration
+
+Django uses a configuration file named settings.py that contains a variable called DATABASES (see https://docs.djangoproject.com/en/1.5/ref/settings/#std:setting-DATABASES). To configure Django to use Connector/Python as the MySQL backend, the example found in the Django manual can be used as a basis:
+
+DATABASES = {
+    'default': {
+        'NAME': 'user_data',
+        'ENGINE': 'mysql.connector.django',
+        'USER': 'mysql_user',
+        'PASSWORD': 'priv4te',
+        'OPTIONS': {
+          'autocommit': True,
+        },
+    }
+}
+
+It is possible to add more connection arguments using OPTIONS.
+
+Support for MySQL Features
+
+Django can launch the MySQL client application mysql. When the Connector/Python backend does this, it arranges for the sql_mode system variable to be set to TRADITIONAL at startup.
+
+Some MySQL features are enabled depending on the server version. For example, support for fractional seconds precision is enabled when connecting to a server from MySQL 5.6.4 or higher. Django's DateTimeField is stored in a MySQL column defined as DATETIME(6), and TimeField is stored as TIME(6). For more information about fractional seconds support, see Fractional Seconds in Time Values.
+
+Django Unit Testing
+
+Django comes with an extensive set of unit tests. To run these, use the run_django_tests.py script located in the Connector/Python distribution support/django directory. For example, to run the basic tests using Django 1.5, run the following commands:
+
+shell> cd support/django
+shell> python run_django_tests.py --django 1.5 --tests basic
+
+The script can be run using Python 2 or Python 3. It downloads Django, unpacks it and starts the tests. To avoid the download and use an already-fetched version, use the --offline option.
+
+To see the script requirements, run it with the --help option, or examine the script itself. Here is an overview:
+
+  * Two MySQL servers, configured as a master/slave pair
+
+  * A database named django_tests on each server
+
+To alter the settings of the MySQL servers, modify the file test_mysqlconnector_settings.py, also located in the support/django directory.

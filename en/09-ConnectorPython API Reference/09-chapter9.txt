@@ -1,0 +1,28 @@
+9.9 Class constants.FieldType
+
+This class provides all supported MySQL field or data types. They can be useful when dealing with raw data or defining your own converters. The field type is stored with every cursor in the description for each column.
+
+The following example shows how to print the name of the data type for each column in a result set.
+
+from __future__ import print_function
+import mysql.connector
+from mysql.connector import FieldType
+
+cnx = mysql.connector.connect(user='scott', database='test')
+cursor = cnx.cursor()
+
+cursor.execute(
+  "SELECT DATE(NOW()) AS `c1`, TIME(NOW()) AS `c2`, "
+  "NOW() AS `c3`, 'a string' AS `c4`, 42 AS `c5`")
+rows = cursor.fetchall()
+
+for desc in cursor.description:
+  colname = desc[0]
+  coltype = desc[1]
+  print("Column {} has type {}".format(
+    colname, FieldType.get_info(coltype)))
+
+cursor.close()
+cnx.close()
+
+The FieldType class cannot be instantiated.

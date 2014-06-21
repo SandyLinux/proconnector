@@ -1,0 +1,10 @@
+Chapter 5 Connector/Python Coding Examples
+
+Table of Contents
+
+5.1 Connecting to MySQL Using Connector/Python
+5.2 Creating Tables Using Connector/Python
+5.3 Inserting Data Using Connector/Python
+5.4 Querying Data Using Connector/Python
+
+These coding examples illustrate how to develop Python applications and scripts which connect to MySQL Server using MySQL Connector/Python.

@@ -1,0 +1,291 @@
+9.5 Class cursor.MySQLCursor
+
+9.5.1 Constructor cursor.MySQLCursor
+9.5.2 Method MySQLCursor.callproc(procname, args=())
+9.5.3 Method MySQLCursor.close()
+9.5.4 Method MySQLCursor.execute(operation, params=None, multi=False)
+9.5.5 Method MySQLCursor.executemany(operation, seq_params)
+9.5.6 Method MySQLCursor.fetchall()
+9.5.7 Method MySQLCursor.fetchmany(size=1)
+9.5.8 Method MySQLCursor.fetchone()
+9.5.9 Method MySQLCursor.fetchwarnings()
+9.5.10 Method MySQLCursor.stored_results()
+9.5.11 Property MySQLCursor.column_names
+9.5.12 Property MySQLCursor.description
+9.5.13 Property MySQLCursor.lastrowid
+9.5.14 Property MySQLCursor.statement
+9.5.15 Property MySQLCursor.with_rows
+
+The MySQLCursor class is used to instantiate objects that can execute operations such as SQL queries. They interact with the MySQL server using a MySQLConnection object.
+
+These related classes inherit from cursor.MySQLCursor:
+
+  * cursor.MySQLCursorBuffered creates a buffered cursor. See Section 9.6, “Class cursor.MySQLCursorBuffered”.
+
+  * cursor.MySQLCursorPrepared creates a cursor for executing prepared statements. See Section 9.7, “Class cursor.MySQLCursorPrepared”.
+
+9.5.1 Constructor cursor.MySQLCursor
+
+The constructor initializes the instance with the optional connection, which should be an instance of MySQLConnection.
+
+In most cases, the MySQLConnection cursor() method is used to instantiate a MySQLCursor object.
+
+9.5.2 Method MySQLCursor.callproc(procname, args=())
+
+This method calls a stored procedure with the given name. The args sequence of parameters must contain one entry for each argument that the routine expects. The result is returned as modified copy of the input sequence. Input parameters are left untouched. Output and input/output parameters may be replaced with new values.
+
+Result sets produced by the stored procedure are automatically fetched and stored as MySQLCursorBuffered instances. For more information, see stored_results().
+
+The following example shows how to execute a stored procedure which takes two parameters, multiplies the values and returns the product:
+
+
+# Definition of the multiply stored procedure:
+# CREATE PROCEDURE multiply(IN pFac1 INT, IN pFac2 INT, OUT pProd INT)
+# BEGIN
+#  SET pProd := pFac1 * pFac2;
+# END
+
+>>> args = (5, 5, 0) # 0 is to hold value of the OUT parameter pProd
+>>> cursor.callproc('multiply', args)
+('5', '5', 25L)
+
+Connector/Python 1.2.1 and up permits parameter types to be specified. To do this, specify a parameter as a two-item tuple consisting of the parameter value and type. Suppose that a procedure sp1() has this definition:
+
+CREATE PROCEDURE sp1(IN pStr1 VARCHAR(20), IN pStr2 VARCHAR(20),
+                     OUT pConCat VARCHAR(100))
+BEGIN
+  SET pConCat := CONCAT(pStr1, pStr2);
+END
+
+To execute this procedure from Connector/Python, specifying a type for the OUT parameter, do this:
+
+args = ('ham', 'spam', (0, 'CHAR'))
+cursor.callproc('sp1', args)
+print(cursor.fetchone())
+
+9.5.3 Method MySQLCursor.close()
+
+This method closes the MySQL cursor, resetting all results, and make sure that the cursor object has no reference to the connection object.
+
+Use close() every time you are done using the cursor.
+
+9.5.4 Method MySQLCursor.execute(operation, params=None, multi=False)
+
+This method prepare the given database operation (query or command). The parameters found in the tuple or dictionary params are bound to the variables in the operation. Variables are specified using %s (format) or %(name)s (pyformat) parameter style.
+
+This example inserts information about a new employee, then selects the data for this person:
+
+insert = (
+  "INSERT INTO employees (emp_no, first_name, last_name, hire_date) "
+  "VALUES (%s, %s, %s, %s)"
+)
+data = (2, 'Jane', 'Doe', datetime.date(2012, 3, 23))
+cursor.execute(insert, data)
+
+select = "SELECT * FROM employees WHERE emp_no = %(emp_no)s"
+cursor.execute(select, { 'emp_no': 2 })
+Note that the data values are converted as necessar from Python objects to something MySQL understand. In the preceding example, the datetime.date() instance is converted to '2012-03-23'.
+
+When multi is set to True, execute() is able to execute multiple statements. It returns an iterator that makes it possible to process the results for each statement. Note that using parameters is not working well in this case, and it is usually a good idea to execute each statement on its own.
+
+The following example selects and inserts data in one operation and displays the result:
+
+operation = 'SELECT 1; INSERT INTO t1 VALUES (); SELECT 2'
+for result in cursor.execute(operation):
+  if result.with_rows:
+    print("Statement '{}' has following rows:".format(
+      result.statement))
+    print(result.fetchall())
+  else:
+    print("Affected row(s) by query '{}' was {}".format(
+      result.statement, result.rowcount))
+If the connection was configured to fetch warnings, warnings generated by the operation are available through the MySQLCursor.fetchwarnings() method.
+
+Returns an iterator when multi is True.
+
+9.5.5 Method MySQLCursor.executemany(operation, seq_params)
+
+This method prepares a database operation (query or command) and then executes it against all parameter sequences or mappings found in the sequence seq_of_params.
+
+The executemany() iterates through the sequence of parameters calling the execute() method. Inserting data, however, is optimized by batching them using multipler-row syntax.
+
+The following example inserts three records:
+
+data = [
+  ('Jane', date(2005, 2, 12)),
+  ('Joe', date(2006, 5, 23)),
+  ('John', date(2010, 10, 3)),
+]
+stmt = "INSERT INTO employees (first_name, hire_date) VALUES (%s, %s)"
+cursor.executemany(stmt, data)
+In the preceding example, the INSERT statement sent to MySQL would be:
+
+INSERT INTO employees (first_name, hire_date)
+VALUES ('Jane', '2005-02-12'), ('Joe', '2006-05-23'), ('John', '2010-10-03')
+Tt is not possible to execute multiple statements using the executemany() method. Doing so raises an InternalError exception.
+
+9.5.6 Method MySQLCursor.fetchall()
+
+The method fetches all or remaining rows of a query result set, returning a list of tuples. When no more rows are available, it returns an empty list.
+
+The following example shows how to retrieve the first two rows of a result set, and then retrieve the remaining rows:
+
+
+>>> cursor.execute("SELECT * FROM employees ORDER BY emp_no")
+>>> head_rows = cursor.fetchmany(size=2)
+>>> remaining_rows = cursor.fetchall()
+
+You must fetch all rows before being able to execute new queries using the same connection.
+
+9.5.7 Method MySQLCursor.fetchmany(size=1)
+
+This method fetches the next set of rows of a query result, returning a list of tuples. When no more rows are available, it returns an empty list.
+
+The number of rows returned can be specified using the size argument, which defaults to one. Fewer rows might be returned, when there are not more rows available than specified by the argument.
+
+Note that you must fetch all rows before being able to execute new queries using the same connection.
+
+9.5.8 Method MySQLCursor.fetchone()
+
+This method retrieves the next row of a query result set, returning a single sequence, or None when no more rows are available.The returned tuple consists of data returned by the MySQL server converted to Python objects.
+
+The fetchone() method is used by fetchmany() and fetchall(). It is also used when using the MySQLCursor instance as an iterator.
+
+The following example shows how to use fetchone() to process a query result, first using a while loop, then using an iterator:
+
+# Using a while-loop
+cursor.execute("SELECT * FROM employees")
+row = cursor.fetchone()
+while row is not None:
+  print(row)
+  row = cursor.fetchone()
+
+# Using the cursor as iterator 
+cursor.execute("SELECT * FROM employees")
+for row in cursor:
+  print(row)
+
+You must fetch all rows before being able to execute new queries using the same connection.
+
+9.5.9 Method MySQLCursor.fetchwarnings()
+
+This method returns a list of tuples containing warnings generated by previously executed statement. Use the connection's get_warnings property to set whether warnings are to be fetched.
+
+The following example shows a SELECT statement which generated a warning:
+
+
+>>> cnx.get_warnings = True
+>>> cursor.execute('SELECT "a"+1')
+>>> cursor.fetchall()
+[(1.0,)]
+>>> cursor.fetchwarnings()
+[(u'Warning', 1292, u"Truncated incorrect DOUBLE value: 'a'")]
+
+It is also possible to raise errors when warnings are found. See the MySQLConnection raise_on_warnings property.
+
+9.5.10 Method MySQLCursor.stored_results()
+
+This method returns a list iterator object that can be used to process result sets produced by a stored procedure after calling it using the callproc() method.
+
+The following example executes a stored procedure that produces two result sets, then uses stored_results() to retrieve them:
+
+
+>>> cursor.callproc('sp1')
+()
+>>> for result in cursor.stored_results():
+...     print result.fetchall()
+... 
+[(1,)]
+[(2,)]
+
+The result sets remain available until you execute another operation or call another stored procedure.
+
+9.5.11 Property MySQLCursor.column_names
+
+This read-only property returns the column names of a result set as sequence of (Unicode) strings.
+
+The following example shows how to create a dictionary from a tuple containing data with keys using column_names:
+
+cursor.execute("SELECT last_name, first_name, hire_date "
+               "FROM employees WHERE emp_no = %s", (123,))
+row = dict(zip(cursor.column_names, cursor.fetchone())
+print("{last_name}, {first_name}: {hire_date}".format(row))
+
+9.5.12 Property MySQLCursor.description
+
+This read-only property returns a list of tuples describing the columns in a result set. Each tuple contains values as follows:
+
+(column_name,
+ type,
+ None,
+ None,
+ None,
+ None,
+ null_ok,
+ column_flags)
+
+The following example shows how to interpret description tuples:
+
+import mysql.connector
+from mysql.connector import FieldType
+
+...
+
+cursor.execute("SELECT emp_no, last_name, hire_date "
+               "FROM employees WHERE emp_no = %s", (123,))
+for i in range(len(cursor.description)):
+  print("Column {}:".format(i+1))
+  desc = cursor.description[i]
+  print("column_name = {}".format(desc[0]))
+  print("type = {} ({})".format(desc[1], FieldType.get_info(desc[1])))
+  print("null_ok = {}".format(desc[6]))
+  print("column_flags = {}".format(desc[7]))
+The output looks like this:
+
+Column 1:
+column_name = emp_no
+type = 3 (LONG)
+null_ok = 0
+column_flags = 20483
+Column 2:
+column_name = last_name
+type = 253 (VAR_STRING)
+null_ok = 0
+column_flags = 4097
+Column 3:
+column_name = hire_date
+type = 10 (DATE)
+null_ok = 0
+column_flags = 4225
+The column_flags value is an instance of the constants.FieldFlag class. To see how to interpret it, do this:
+
+>>> from mysql.connector import FieldFlag
+>>> FieldFlag.desc
+
+9.5.13 Property MySQLCursor.lastrowid
+
+This read-only property returns the row ID of the last modified row. For example, if you perform an INSERT into a table that contains an AUTO_INCREMENT column, lastrowid returns the AUTO_INCREMENT value for the new row. For an example, see Section 5.3, “Inserting Data Using Connector/Python”.
+
+9.5.14 Property MySQLCursor.statement
+
+This read-only property returns the last executed statement as a string. The string can contain multiple statements if a multiple-statement string was executed.
+
+The statement property can be useful for debugging and displaying what was sent to the MySQL server.
+
+9.5.15 Property MySQLCursor.with_rows
+
+This read-only property returns True when the result of the executed operation provides rows.
+
+The with_rows property is useful when it is necessary to determine whether a statement produces a result set and you need to fetch rows. The following example retrieves the rows returned by the SELECT statement, but reports only the affected-rows value for the UPDATE statement:
+
+import mysql.connector
+
+cnx = mysql.connector.connect(user='scott', database='test')
+cursor = cnx.cursor()
+operation = 'SELECT 1; UPDATE t1 SET c1 = 2; SELECT 2'
+
+for result in cursor.execute(operation, multi=True):
+  if result.with_rows:
+    result.fetchall()
+  else:
+    print("Updated row(s): {}".format(result.rowcount))

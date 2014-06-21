@@ -1,0 +1,84 @@
+8.1 Connector/Python Connection Pooling
+
+MySQL Connector/Python 1.1.1 and up supports simple connection pooling that has these characteristics:
+
+  * The mysql.connector.pooling module implements pooling.
+
+  * A pool opens a number of connections and handles thread safety when providing connections to requesters.
+
+  * The size of a connection pool is configurable at pool creation time. It cannot be resized thereafter.
+
+  * A connection pool can be named at pool creation time. If no name is given, one is generated using the connection parameters.
+
+  * The connection pool name can be retrieved from the connection pool or connections obtained from it.
+
+  * It is possible to have multiple connection pools. This enables applications to support pools of connections to different MySQL servers, for example.
+
+  * For each connection request, the pool provides the next available connection. No round-robin or other scheduling algorithm is used.
+
+  * It is possible to reconfigure the connection parameters used by a pool. These apply to connections obtained from the pool thereafter. Reconfiguring individual connections obtained from the pool by calling the connection config() method is not supported.
+
+Applications that can benefit from connection-pooling capability include:
+
+  * Middleware that maintains multiple connections to multiple MySQL servers and requires connections to be readily available.
+
+  * Web sites that can have more “permanent” connections open to the MySQL server.
+
+A connection pool can be created implicitly or explicitly.
+
+To create a connection pool implicitly: Open a connection and specify one or more pool-related arguments (pool_name, pool_size). For example:
+
+dbconfig = {
+  "database": "test",
+  "user":     "joe"
+}
+
+cnx = mysql.connector.connect(pool_name = "mypool",
+                              pool_size = 3,
+                              **dbconfig)
+
+The pool name is restricted to alphanumeric characters and the special characters ., _, *, $, and #. The pool name must be no more than pooling.CNX_POOL_MAXNAMESIZE characters long (default 64).
+
+The pool size must be greater than 0 and less than pooling.CNX_POOL_MAXSIZE (default 32).
+
+With either the pool_name or pool_size argument present, Connector/Python creates the new pool. If the pool_name argument is not given, the connect() call automatically generates the name, composed from whichever of the host, port, user, and database connection arguments are given, in that order. If the pool_size argument is not given, the default size is 5 connections.
+
+Subsequent calls to connect() that name the same connection pool return connections from the existing pool. Any pool_size or connection parameter arguments are ignored, so the following connect() calls are equivalent to the original connect() call shown earlier:
+
+cnx = mysql.connector.connect(pool_name = "mypool", pool_size = 3)
+cnx = mysql.connector.connect(pool_name = "mypool", **dbconfig)
+cnx = mysql.connector.connect(pool_name = "mypool")
+
+Pooled connections obtained by calling connect() with a pool-related argument have a class of PooledMySQLConnection (see Section 9.4, “Class pooling.PooledMySQLConnection”). PooledMySQLConnection pooled connection objects are similar to MySQLConnection unpooled connection objects, with these differences:
+
+  * To release a pooled connection obtained from a connection pool, invoke its close() method, just as for any unpooled connection. However, for a pooled connection, close() does not actually close the connection but returns it to the pool and makes it available for subsequent connection requests.
+
+  * A pooled connection cannot be reconfigured using its config() method. Connection changes must be done through the pool object itself, as described shortly.
+
+  * A pooled connection has a pool_name property that returns the pool name.
+
+To create a connection pool explicitly: Create a MySQLConnectionPool object (see Section 9.3, “Class pooling.MySQLConnectionPool”):
+
+dbconfig = {
+  "database": "test",
+  "user":     "joe"
+}
+
+cnxpool = mysql.connector.pooling.MySQLConnectionPool(pool_name = "mypool",
+                                                      pool_size = 3,
+                                                      **dbconfig)
+To request a connection from the pool, use its get_connection() method:
+
+cnx1 = cnxpool.get_connection()
+cnx2 = cnxpool.get_connection()
+When you create a connection pool explicitly, it is possible to use the pool object's set_config() method to reconfigure the pool connection parameters:
+
+dbconfig = {
+  "database": "performance_schema",
+  "user":     "admin",
+  "password": "secret"
+}
+
+cnxpool.set_config(**dbconfig)
+
+Connections requested from the pool after the configuration change use the new parameters. Connections obtained before the change remain unaffected, but when they are closed (returned to the pool) are reopened with the new parameters before being returned by the pool for subsequent connection requests.

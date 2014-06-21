@@ -1,0 +1,28 @@
+4.2 Installing Connector/Python Source Distribution on Linux, Unix, or Mac OS X
+
+On Unix-like systems such as Linux distributions, Solaris, Mac OS X, and FreeBSD, you can download Connector/Python as a tar archive from http://dev.mysql.com/downloads/connector/python/.
+
+To install Connector/Python from the .tar.gz file, download the latest version and follow these steps:
+
+shell> gunzip mysql-connector-python-1.0.10.tar.gz
+shell> tar xf mysql-connector-python-1.0.10.tar
+shell> cd mysql-connector-python-1.0.10
+shell> sudo python setup.py install
+
+On Unix-like systems, Connector/Python is installed in the default location /prefix/lib/pythonX.Y/site-packages/, where prefix is the location where Python was installed and X.Y is the Python version. See How installation works in the Python manual.
+
+If you are not sure where Connector/Python was installed, do the following to determine the location:
+
+shell> python
+>>> from distutils.sysconfig import get_python_lib
+
+>>> print get_python_lib()            # Python v2.x
+/Library/Python/2.7/site-packages
+
+>>> print(get_python_lib())           # Python v3.x
+
+/Library/Frameworks/Python.framework/Versions/3.1/lib/python3.1/site-packages
+
+	Note
+
+		The preceding example shows the default installation location on Mac OS X 10.7.

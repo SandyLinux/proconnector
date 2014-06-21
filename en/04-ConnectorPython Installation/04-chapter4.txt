@@ -1,0 +1,3 @@
+4.4 Verifying Your Connector/Python Installation
+
+To test that your Connector/Python installation is working and able to connect to MySQL Server, you can run a very simple program where you supply the login credentials and host information required for the connection. See Section 5.1, “Connecting to MySQL Using Connector/Python” for an example.

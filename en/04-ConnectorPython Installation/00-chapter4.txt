@@ -1,0 +1,20 @@
+Chapter 4 Connector/Python Installation
+
+Table of Contents
+
+4.1 Installing Connector/Python from a Binary Distribution
+4.2 Installing Connector/Python Source Distribution on Linux, Unix, or Mac OS X
+4.3 Installing Connector/Python Source Distribution on Microsoft Windows
+4.4 Verifying Your Connector/Python Installation
+
+Connector/Python runs on any platform where Python is installed. Python comes preinstalled on almost any Linux distribution or Unix-like system such as Mac OS X and FreeBSD. On Microsoft Windows systems, you can install Python using the installer found on the Python Download website.
+
+Connector/Python is a pure Python implementation of the MySQL Client/Server protocol, meaning it does not require any other MySQL client libraries or other components. It also has no third-party dependencies. If you need SSL support, verify that your Python installation has been compiled using the OpenSSL libraries.
+
+Installation of Connector/Python is similar on every platform and follows the standard Python Distribution Utilities or Distutils. Distributions maybe be available in native format for some platforms, such as RPM packages for Linux. When available, the installation of these is covered in this manual.
+
+Python terminology regarding distributions:
+
+	* Source Distribution is a distribution that contains only source files and is generally platform independent.
+
+	* Built Distribution can be regarded as a binary package. It contains both sources and platform-independent bytecode.

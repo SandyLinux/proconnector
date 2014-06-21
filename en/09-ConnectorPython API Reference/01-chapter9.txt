@@ -1,0 +1,59 @@
+9.1 Module mysql.connector
+
+9.1.1 Method mysql.connector.connect()
+9.1.2 Property mysql.connector.apilevel
+9.1.3 Property mysql.connector.paramstyle
+9.1.4 Property mysql.connector.threadsafety
+9.1.5 Property mysql.connector.__version__
+9.1.6 Property mysql.connector.__version_info__
+The mysql.connector module provides top-level methods and properties.
+
+9.1.1 Method mysql.connector.connect()
+
+This method sets up a connection, establishing a session with the MySQL server. If no arguments are given, it uses the already configured or default values. For a complete list of possible arguments, see Chapter 7, Connector/Python Connection Arguments.
+
+A connection with the MySQL server can be established using either the mysql.connector.connect() method or the mysql.connector.MySQLConnection() class:
+
+cnx = mysql.connector.connect(user='joe', database='test')
+cnx = MySQLConnection(user='joe', database='test')
+For descriptions of connection methods and properties, see Section 9.2, “Class connection.MySQLConnection”.
+
+9.1.2 Property mysql.connector.apilevel
+
+This property is a string that indicates the supported DB API level.
+
+
+>>> mysql.connector.apilevel
+'2.0'
+
+9.1.3 Property mysql.connector.paramstyle
+
+This property is a string that indicates the Connector/Python default parameter style.
+
+
+>>> mysql.connector.paramstyle
+'pyformat'
+
+9.1.4 Property mysql.connector.threadsafety
+
+This property is an integer that indicates the supported level of thread safety provided by Connector/Python.
+
+
+>>> mysql.connector.threadsafety
+1
+
+9.1.5 Property mysql.connector.__version__
+
+This property indicates the Connector/Python version as a string. It is available as of Connector/Python 1.1.0.
+
+
+>>> mysql.connector.__version__
+'1.1.0'
+
+9.1.6 Property mysql.connector.__version_info__
+
+This property indicates the Connector/Python version as an array of version components. It is available as of Connector/Python 1.1.0.
+
+
+>>> mysql.connector.__version_info__
+(1, 1, 0, 'a', 0)

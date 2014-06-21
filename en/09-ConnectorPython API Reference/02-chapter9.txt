@@ -1,0 +1,536 @@
+9.2 Class connection.MySQLConnection
+
+9.2.1 Constructor connection.MySQLConnection(**kwargs)
+9.2.2 Method MySQLConnection.close()
+9.2.3 Method MySQLConnection.commit()
+9.2.4 Method MySQLConnection.config(**kwargs)
+9.2.5 Method MySQLConnection.connect()
+9.2.6 Method MySQLConnection.cursor(buffered=None, raw=None, cursor_class=None)
+9.2.7 Method MySQLConnection.cmd_change_user(username='', password='', database='', charset=33)
+9.2.8 Method MySQLConnection.cmd_debug()
+9.2.9 Method MySQLConnection.cmd_init_db(database)
+9.2.10 Method MySQLConnection.cmd_ping()
+9.2.11 Method MySQLConnection.cmd_process_info()
+9.2.12 Method MySQLConnection.cmd_process_kill(mysql_pid)
+9.2.13 Method MySQLConnection.cmd_query(statement)
+9.2.14 Method MySQLConnection.cmd_query_iter(statement)
+9.2.15 Method MySQLConnection.cmd_quit()
+9.2.16 Method MySQLConnection.cmd_refresh(options)
+9.2.17 Method MySQLConnection.cmd_reset_connection()
+9.2.18 Method MySQLConnection.cmd_shutdown()
+9.2.19 Method MySQLConnection.cmd_statistics()
+9.2.20 Method MySQLConnection.disconnect()
+9.2.21 Method MySQLConnection.get_row()
+9.2.22 Method MySQLConnection.get_rows(count=None)
+9.2.23 Method MySQLConnection.get_server_info()
+9.2.24 Method MySQLConnection.get_server_version()
+9.2.25 Method MySQLConnection.is_connected()
+9.2.26 Method MySQLConnection.isset_client_flag(flag)
+9.2.27 Method MySQLConnection.ping(attempts=1, delay=0)
+9.2.28 Method MySQLConnection.reconnect(attempts=1, delay=0)
+9.2.29 Method MySQLConnection.reset_session()
+9.2.30 Method MySQLConnection.rollback()
+9.2.31 Method MySQLConnection.set_charset_collation(charset=None, collation=None)
+9.2.32 Method MySQLConnection.set_client_flags(flags)
+9.2.33 Method MySQLConnection.start_transaction()
+9.2.34 Property MySQLConnection.autocommit
+9.2.35 Property MySQLConnection.charset_name
+9.2.36 Property MySQLConnection.collation_name
+9.2.37 Property MySQLConnection.connection_id
+9.2.38 Property MySQLConnection.database
+9.2.39 Property MySQLConnection.get_warnings
+9.2.40 Property MySQLConnection.in_transaction
+9.2.41 Property MySQLConnection.raise_on_warnings
+9.2.42 Property MySQLConnection.server_host
+9.2.43 Property MySQLConnection.server_port
+9.2.44 Property MySQLConnection.sql_mode
+9.2.45 Property MySQLConnection.time_zone
+9.2.46 Property MySQLConnection.unix_socket
+9.2.47 Property MySQLConnection.user
+
+The MySQLConnection class is used to open and manage a connection to a MySQL server. It also used to send commands and SQL statements and read the results.
+
+9.2.1 Constructor connection.MySQLConnection(**kwargs)
+
+The MySQLConnection constructor initializes the attributes and when at least one argument is passed, it tries to connect to the MySQL server.
+
+For a complete list of arguments, see Chapter 7, Connector/Python Connection Arguments.
+
+9.2.2 Method MySQLConnection.close()
+
+Syntax:
+
+cnx.close()
+close() is a synonym for disconnect(). See Section 9.2.20, “Method MySQLConnection.disconnect()”.
+
+For a connection obtained from a connection pool, close() does not actually close it but returns it to the pool and makes it available for subsequent connection requests. See Section 8.1, “Connector/Python Connection Pooling”.
+
+9.2.3 Method MySQLConnection.commit()
+
+This method sends a COMMIT statement to the MySQL server, committing the current transaction. Since by default Connector/Python does not autocommit, it is important to call this method after every transaction that modifies data for tables that use transactional storage engines.
+
+
+>>> cursor.execute("INSERT INTO employees (first_name) VALUES (%s)", ('Jane'))
+>>> cnx.commit()
+
+To roll back instead and discard modifications, see the rollback() method.
+
+9.2.4 Method MySQLConnection.config(**kwargs)
+
+Syntax:
+
+cnx.config(**kwargs)
+Configures a MySQLConnection instance after it has been instantiated. For a complete list of possible arguments, see Chapter 7, Connector/Python Connection Arguments.
+
+Arguments:
+
+	* kwargs: Connection arguments.
+
+You could use the config() method to change (for example) the user name, then call reconnect().
+
+Example:
+
+cnx = mysql.connector.connect(user='joe', database='test')
+# Connected as 'joe'
+cnx.config(user='jane')
+cnx.reconnect()
+# Now connected as 'jane'
+
+For a connection obtained from a connection pool, config() raises an exception. See Section 8.1, “Connector/Python Connection Pooling”.
+
+9.2.5 Method MySQLConnection.connect()
+
+Syntax:
+
+MySQLConnection.connect(**kwargs)
+This method sets up a connection, establishing a session with the MySQL server. If no arguments are given, it uses the already configured or default values. For a complete list of possible arguments, see Chapter 7, Connector/Python Connection Arguments.
+
+Arguments:
+
+	* kwargs: Connection arguments.
+
+Example:
+
+cnx = MySQLConnection(user='joe', database='test')
+For a connection obtained from a conection pool, the connection object class is PooledMySQLConnection. A pooled connection differs from an unpooled connection as described in Section 8.1, “Connector/Python Connection Pooling”.
+
+9.2.6 Method MySQLConnection.cursor(buffered=None, raw=None, cursor_class=None)
+
+This method returns a MySQLCursor() object, or a subclass of it depending on the passed arguments.
+
+When buffered is True, the cursor fetches all rows after the operation is executed. This is useful when queries return small result sets. Setting raw skips the conversion from MySQL data types to Python types when fetching rows. Raw is usually used when you want to get better performance or you want to do the conversion yourself.
+
+The cursor_class argument can be used to pass a class to use for instantiating a new cursor. It must be a subclass of cursor.CursorBase.
+
+The returned object depends on the combination of the buffered and raw arguments.
+
+	* If not buffered and not raw: cursor.MySQLCursor
+
+	* If buffered and not raw: cursor.MySQLCursorBuffered
+
+	* If buffered and raw: cursor.MySQLCursorBufferedRaw
+
+	* If not buffered and raw: cursor.MySQLCursorRaw
+
+Returns a CursorBase instance.
+
+9.2.7 Method MySQLConnection.cmd_change_user(username='', password='', database='', charset=33)
+
+Changes the user using username and password. It also causes the specified database to become the default (current) database. It is also possible to change the character set using the charset argument.
+
+Returns a dictionary containing the OK packet information.
+
+9.2.8 Method MySQLConnection.cmd_debug()
+
+Instructs the server to write debugging information to the error log. The connected user must have the SUPER privilege.
+
+Returns a dictionary containing the OK packet information.
+
+9.2.9 Method MySQLConnection.cmd_init_db(database)
+
+This method makes specified database the default (current) database. In subsequent queries, this database is the default for table references that include no explicit database qualifier.
+
+Returns a dictionary containing the OK packet information.
+
+9.2.10 Method MySQLConnection.cmd_ping()
+
+Checks whether the connection to the server is working.
+
+This method is not to be used directly. Use ping() or is_connected() instead.
+
+Returns a dictionary containing the OK packet information.
+
+9.2.11 Method MySQLConnection.cmd_process_info()
+
+This method raises the NotSupportedError exception. Instead, use the SHOW PROCESSLIST statement or query the tables found in the database INFORMATION_SCHEMA.
+
+9.2.12 Method MySQLConnection.cmd_process_kill(mysql_pid)
+
+Asks the server to kill the thread specified by mysql_pid. Although still available, it is better to use the KILL SQL statement.
+
+Returns a dictionary containing the OK packet information.
+
+The following two lines have the same effect:
+
+
+>>> cnx.cmd_process_kill(123)
+>>> cnx.cmd_query('KILL 123')
+
+9.2.13 Method MySQLConnection.cmd_query(statement)
+
+This method sends the given statement to the MySQL server and returns a result. To send multiple statements, use the cmd_query_iter() method instead.
+
+The returned dictionary contains information depending on what kind of query was executed. If the query is a SELECT statement, the result contains information about columns. Other statements return a dictionary containing OK or EOF packet information.
+
+Errors received from the MySQL server are raised as exceptions. An InterfaceError is raised when multiple results are found.
+
+Returns a dictionary.
+
+9.2.14 Method MySQLConnection.cmd_query_iter(statement)
+
+Similar to the cmd_query() method, but returns a generator object to iterate through results. Use cmd_query_iter() when sending multiple statements, and separate the statements with semicolons.
+
+The following example shows how to iterate through the results after sending multiple statements:
+
+statement = 'SELECT 1; INSERT INTO t1 VALUES (); SELECT 2'
+for result in cnx.cmd_query_iter(statement):
+  if 'columns' in result:
+    columns = result['columns']
+    rows = cnx.get_rows()
+  else:
+    # do something useful with INSERT result
+Returns a generator object.
+
+9.2.15 Method MySQLConnection.cmd_quit()
+
+This method sends a QUIT command to the MySQL server, closing the current connection. Since there is no response from the MySQL server, the packet that was sent is returned.
+
+9.2.16 Method MySQLConnection.cmd_refresh(options)
+
+This method flushes tables or caches, or resets replication server information. The connected user must have the RELOAD privilege.
+
+The options argument should be a bitmask value constructed using constants from the constants.RefreshOption class.
+
+For a list of options, see Section 9.12, “Class constants.RefreshOption”.
+
+Example:
+
+
+>>> from mysql.connector import RefreshOption
+>>> refresh = RefreshOption.LOG | RefreshOption.THREADS
+>>> cnx.cmd_refresh(refresh)
+
+9.2.17 Method MySQLConnection.cmd_reset_connection()
+
+Syntax:
+
+cnx.cmd_reset_connection()
+Resets the connection by sending a COM_RESET_CONNECTION command to the server to clear the session state.
+
+This method permits the session state to be cleared without reauthenticating. For MySQL servers older than 5.7.3 (when COM_RESET_CONNECTION was introduced), the reset_session() method can be used instead. That method resets the session state by reauthenticating, which is more expensive.
+
+This method was added in Connector/Python 1.2.1.
+
+9.2.18 Method MySQLConnection.cmd_shutdown()
+
+Asks the database server to shut down. The connected user must have the SHUTDOWN privilege.
+
+Returns a dictionary containing the OK packet information.
+
+9.2.19 Method MySQLConnection.cmd_statistics()
+
+Returns a dictionary containing information about the MySQL server including uptime in seconds and the number of running threads, questions, reloads, and open tables.
+
+9.2.20 Method MySQLConnection.disconnect()
+
+This method tries to send a QUIT command and close the socket. It raises no exceptions.
+
+MySQLConnection.close() is a synonymous method name and more commonly used.
+
+9.2.21 Method MySQLConnection.get_row()
+
+This method retrieves the next row of a query result set, returning a tuple.
+
+The tuple returned by get_row() consists of:
+
+	* The row as a tuple containing byte objects, or None when no more rows are available.
+
+	* EOF packet information as a dictionary containing status_flag and warning_count, or None when the row returned is not the last row.
+
+The get_row() method is used by MySQLCursor to fetch rows.
+
+9.2.22 Method MySQLConnection.get_rows(count=None)
+
+This method retrieves all or remaining rows of a query result set, returning a tuple containing the rows as sequences and the EOF packet information. The count argument can be used to obtain a given number of rows. If count is not specified or is None, all rows are retrieved.
+
+The tuple returned by get_rows() consists of:
+
+	* A list of tuples containing the row data as byte objects, or an empty list when no rows are available.
+
+	* EOF packet information as a dictionary containing status_flag and warning_count.
+
+An InterfaceError is raised when all rows have been retrieved.
+
+MySQLCursor uses the get_rows() method to fetch rows.
+
+Returns a tuple.
+
+9.2.23 Method MySQLConnection.get_server_info()
+
+This method returns the MySQL server information verbatim as a string, for example '5.6.11-log', or None when not connected.
+
+9.2.24 Method MySQLConnection.get_server_version()
+
+This method returns the MySQL server version as a tuple, or None when not connected.
+
+9.2.25 Method MySQLConnection.is_connected()
+
+Reports whether the connection to MySQL Server is available.
+
+This method checks whether the connection to MySQL is available using the ping() method, but unlike ping(), is_connected() returns True when the connection is available, False otherwise.
+
+9.2.26 Method MySQLConnection.isset_client_flag(flag)
+
+This method returns True if the client flag was set, False otherwise.
+
+9.2.27 Method MySQLConnection.ping(attempts=1, delay=0)
+
+Check whether the connection to the MySQL server is still available.
+
+When reconnect is set to True, one or more attempts are made to try to reconnect to the MySQL server using the reconnect() method. Use the delay argument (seconds) if you want to wait between each retry.
+
+When the connection is not available, an InterfaceError is raised. Use the is_connected() method to check the connection without raising an error.
+
+Raises InterfaceError on errors.
+
+9.2.28 Method MySQLConnection.reconnect(attempts=1, delay=0)
+
+Attempt to reconnect to the MySQL server.
+
+The argument attempts specifies the number of times a reconnect is tried. The delay argument is the number of seconds to wait between each retry.
+
+You might set the number of attempts higher and use a longer delay when you expect the MySQL server to be down for maintenance, or when you expect the network to be temporarily unavailable.
+
+9.2.29 Method MySQLConnection.reset_session()
+
+Syntax:
+
+cnx.reset_session(user_variables = None, session_variables = None)
+Resets the connection by reauthenticating to clear the session state. user_variables, if given, is a dictionary of user variable names and values. session_variables, if given, is a dictionary of system variable names and values. The method sets each variable to the given value.
+
+Example:
+
+user_variables = {'var1': '1', 'var2': '10'}
+session_variables = {'wait_timeout': 100000, 'sql_mode': 'TRADITIONAL'}
+self.cnx.reset_session(user_variables, session_variables)
+This method resets the session state by reauthenticating, which is expensive. For MySQL servers 5.7.3 or later, the cmd_reset_connection() method can be used instead. It is more lightweight because it permits the session state to be cleared without reauthenticating.
+
+This method was added in Connector/Python 1.2.1.
+
+9.2.30 Method MySQLConnection.rollback()
+
+This method sends a ROLLBACK statement to the MySQL server, undoing all data changes from the current transaction. By default, Connector/Python does not autocommit, so it is possible to cancel transactions when using transactional storage engines such as InnoDB.
+
+
+>>> cursor.execute("INSERT INTO employees (first_name) VALUES (%s)", ('Jane'))
+>>> cnx.rollback()
+
+To commit modifications, see the commit() method.
+
+9.2.31 Method MySQLConnection.set_charset_collation(charset=None, collation=None)
+
+This method sets the character set and collation to be used for the current connection. The charset argument can be either the name of a character set, or the numerical equivalent as defined in constants.CharacterSet.
+
+When collation is None, the default collation for the character set is used.
+
+In the following example, we set the character set to latin1 and the collation to latin1_swedish_ci (the default collation for: latin1):
+
+
+>>> cnx = mysql.connector.connect(user='scott')
+>>> cnx.set_charset_collation('latin1')
+
+Specify a given collation as follows:
+
+
+>>> cnx = mysql.connector.connect(user='scott')
+>>> cnx.set_charset_collation('latin1', 'latin1_general_ci')
+
+9.2.32 Method MySQLConnection.set_client_flags(flags)
+
+This method sets the client flags to use when connecting to the MySQL server, and returns the new value as an integer. The flags argument can be either an integer or a sequence of valid client flag values (see Section 9.8, “Class constants.ClientFlag”).
+
+If flags is a sequence, each item in the sequence sets the flag when the value is positive or unsets it when negative. For example, to unset LONG_FLAG and set the FOUND_ROWS flags:
+
+
+>>> from mysql.connector.constants import ClientFlag
+>>> cnx.set_client_flags([ClientFlag.FOUND_ROWS, -ClientFlag.LONG_FLAG])
+>>> cnx.reconnect()
+
+Note that client flags are only set or used when connecting to the MySQL server. It is therefore necessary to reconnect after making changes.
+
+9.2.33 Method MySQLConnection.start_transaction()
+
+This method starts a transaction. It accepts arguments indicating whether to use a consistent snapshot, which transaction isolation level to use, and the transaction access mode:
+
+cnx.start_transaction(consistent_snapshot=bool,
+                      isolation_level=level,
+                      readonly=access_mode)
+The default consistent_snapshot value is False. If the value is True, Connector/Python sends WITH CONSISTENT SNAPSHOT with the statement. MySQL ignores this for isolation levels for which that option does not apply.
+
+The default isolation_level value is None, and permitted values are 'READ UNCOMMITTED', 'READ COMMITTED', 'REPEATABLE READ', and 'SERIALIZABLE'. If the isolation_level value is None, no isolation level is sent, so the default level applies.
+
+The readonly argument can be True to start the transaction in READ ONLY mode or False to start it in READ WRITE mode. If readonly is omitted, the server's default access mode is used. For details about transaction access mode, see the description for the START TRANSACTION statement at START TRANSACTION, COMMIT, and ROLLBACK Syntax. If the server is older than MySQL 5.6.5, it does not support setting the access mode and Connector/Python raises a ValueError.
+
+Invoking start_transaction() raises a ProgrammingError if invoked while a transaction is currently in progress. This differs from executing a START TRANSACTION SQL statement while a transaction is in progress; the statement implicitly commits the current transaction.
+
+To determine whether a transaction is active for the connection, use the in_transaction property.
+
+start_transaction() was added in MySQL Connector/Python 1.1.0. The readonly argument was added in Connector/Python 1.1.5.
+
+9.2.34 Property MySQLConnection.autocommit
+
+This property can be assigned a value of True or False to enable or disable the autocommit feature of MySQL. The property can be invoked to retrieve the current autocommit setting.
+
+Note that autocommit is disabled by default when connecting through Connector/Python. This can be enabled using the autocommit connection parameter.
+
+When the autocommit is turned off, you must commit transactions when using transactional storage engines such as InnoDB or NDBCluster.
+
+
+>>> cnx.autocommit
+False
+>>> cnx.autocommit = True
+>>> cnx.autocommit
+True
+
+9.2.35 Property MySQLConnection.charset_name
+
+This property returns a string indicating which character set is used for the connection, whether or not it is connected.
+
+9.2.36 Property MySQLConnection.collation_name
+
+This property returns a string indicating which collation is used for the connection, whether or not it is connected.
+
+9.2.37 Property MySQLConnection.connection_id
+
+This property returns the integer connection ID (thread ID or session ID) for the current connection or None when not connected.
+
+9.2.38 Property MySQLConnection.database
+
+This property sets the current (default) database by executing a USE statement. The property can also be used to retrieve the current database name.
+
+
+>>> cnx.database = 'test'
+>>> cnx.database = 'mysql'
+>>> cnx.database
+u'mysql'
+
+Returns a string.
+
+9.2.39 Property MySQLConnection.get_warnings
+
+This property can be assigned a value of True or False to enable or disable whether warnings should be fetched automatically. The default is False (default). The property can be invoked to retrieve the current warnings setting.
+
+Fetching warnings automatically can be useful when debugging queries. Cursors make warnings available through the method MySQLCursor.fetchwarnings().
+
+
+>>> cnx.get_warnings = True
+>>> cursor.execute('SELECT "a"+1')
+>>> cursor.fetchall()
+[(1.0,)]
+>>> cursor.fetchwarnings()
+[(u'Warning', 1292, u"Truncated incorrect DOUBLE value: 'a'")]
+
+Returns True or False.
+
+9.2.40 Property MySQLConnection.in_transaction
+
+This property returns True or False to indicate whether a transaction is active for the connection. The value is True regardless of whether you start a transaction using the start_transaction() API call or by directly executing a SQL statement such as START TRANSACTION or BEGIN.
+
+
+>>> cnx.start_transaction()
+>>> cnx.in_transaction
+True
+>>> cnx.commit()
+>>> cnx.in_transaction
+False
+
+in_transaction was added in MySQL Connector/Python 1.1.0.
+
+9.2.41 Property MySQLConnection.raise_on_warnings
+
+This property can be assigned a value of True or False to enable or disable whether warnings should raise exceptions. The default is False (default). The property can be invoked to retrieve the current exceptions setting.
+
+Setting raise_on_warnings also sets get_warnings because warnings need to be fetched so they can be raised as exceptions.
+
+Note that you might always want to set the SQL mode if you would like to have the MySQL server directly report warnings as errors (see Section 9.2.44, “Property MySQLConnection.sql_mode”). It is also good to use transactional engines so transactions can be rolled back when catching the exception.
+
+Result sets needs to be fetched completely before any exception can be raised. The following example shows the execution of a query that produces a warning:
+
+
+>>> cnx.raise_on_warnings = True
+>>> cursor.execute('SELECT "a"+1')
+>>> cursor.fetchall()
+..
+mysql.connector.errors.DataError: 1292: Truncated incorrect DOUBLE value: 'a'
+
+Returns True or False.
+
+9.2.42 Property MySQLConnection.server_host
+
+This read-only property returns the host name or IP address used for connecting to the MySQL server.
+
+Returns a string.
+
+9.2.43 Property MySQLConnection.server_port
+
+This read-only property returns the TCP/IP port used for connecting to the MySQL server.
+
+Returns an integer.
+
+9.2.44 Property MySQLConnection.sql_mode
+
+This property is used to retrieve and set the SQL Modes for the current connection. The value should be a list of different modes separated by comma (","), or a sequence of modes, preferably using the constants.SQLMode class.
+
+To unset all modes, pass an empty string or an empty sequence.
+
+
+>>> cnx.sql_mode = 'TRADITIONAL,NO_ENGINE_SUBSTITUTION'
+>>> cnx.sql_mode.split(',')
+[u'STRICT_TRANS_TABLES', u'STRICT_ALL_TABLES', u'NO_ZERO_IN_DATE',
+u'NO_ZERO_DATE', u'ERROR_FOR_DIVISION_BY_ZERO', u'TRADITIONAL', 
+u'NO_AUTO_CREATE_USER', u'NO_ENGINE_SUBSTITUTION']
+
+>>> from mysql.connector.constants import SQLMode
+>>> cnx.sql_mode = [ SQLMode.NO_ZERO_DATE, SQLMode.REAL_AS_FLOAT]
+>>> cnx.sql_mode
+
+u'REAL_AS_FLOAT,NO_ZERO_DATE'
+Returns a string.
+
+9.2.45 Property MySQLConnection.time_zone
+
+This property is used to set or retrieve the time zone session variable for the current connection.
+
+
+>>> cnx.time_zone = '+00:00'
+>>> cur.execute('SELECT NOW()') ; cur.fetchone()
+(datetime.datetime(2012, 6, 15, 11, 24, 36),)
+>>> cnx.time_zone = '-09:00'
+>>> cur.execute('SELECT NOW()') ; cur.fetchone()
+(datetime.datetime(2012, 6, 15, 2, 24, 44),)
+>>> cnx.time_zone
+u'-09:00'
+
+Returns a string.
+
+9.2.46 Property MySQLConnection.unix_socket
+
+This read-only property returns the Unix socket file for connecting to the MySQL server.
+
+Returns a string.
+
+9.2.47 Property MySQLConnection.user
+
+This read-only property returns the user name used for connecting to the MySQL server.
+
+Returns a string.

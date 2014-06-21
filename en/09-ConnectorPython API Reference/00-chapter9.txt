@@ -1,0 +1,137 @@
+Chapter 9 Connector/Python API Reference
+
+Table of Contents
+
+9.1 Module mysql.connector
+  9.1.1 Method mysql.connector.connect()
+  9.1.2 Property mysql.connector.apilevel
+  9.1.3 Property mysql.connector.paramstyle
+  9.1.4 Property mysql.connector.threadsafety
+  9.1.5 Property mysql.connector.__version__
+  9.1.6 Property mysql.connector.__version_info__
+
+9.2 Class connection.MySQLConnection
+  9.2.1 Constructor connection.MySQLConnection(**kwargs)
+  9.2.2 Method MySQLConnection.close()
+  9.2.3 Method MySQLConnection.commit()
+  9.2.4 Method MySQLConnection.config(**kwargs)
+  9.2.5 Method MySQLConnection.connect()
+  9.2.6 Method MySQLConnection.cursor(buffered=None, raw=None, cursor_class=None)
+  9.2.7 Method MySQLConnection.cmd_change_user(username='', password='', database='', charset=33)
+  9.2.8 Method MySQLConnection.cmd_debug()
+  9.2.9 Method MySQLConnection.cmd_init_db(database)
+  9.2.10 Method MySQLConnection.cmd_ping()
+  9.2.11 Method MySQLConnection.cmd_process_info()
+  9.2.12 Method MySQLConnection.cmd_process_kill(mysql_pid)
+  9.2.13 Method MySQLConnection.cmd_query(statement)
+  9.2.14 Method MySQLConnection.cmd_query_iter(statement)
+  9.2.15 Method MySQLConnection.cmd_quit()
+  9.2.16 Method MySQLConnection.cmd_refresh(options)
+  9.2.17 Method MySQLConnection.cmd_reset_connection()
+  9.2.18 Method MySQLConnection.cmd_shutdown()
+  9.2.19 Method MySQLConnection.cmd_statistics()
+  9.2.20 Method MySQLConnection.disconnect()
+  9.2.21 Method MySQLConnection.get_row()
+  9.2.22 Method MySQLConnection.get_rows(count=None)
+  9.2.23 Method MySQLConnection.get_server_info()
+  9.2.24 Method MySQLConnection.get_server_version()
+  9.2.25 Method MySQLConnection.is_connected()
+  9.2.26 Method MySQLConnection.isset_client_flag(flag)
+  9.2.27 Method MySQLConnection.ping(attempts=1, delay=0)
+  9.2.28 Method MySQLConnection.reconnect(attempts=1, delay=0)
+  9.2.29 Method MySQLConnection.reset_session()
+  9.2.30 Method MySQLConnection.rollback()
+  9.2.31 Method MySQLConnection.set_charset_collation(charset=None, collation=None)
+  9.2.32 Method MySQLConnection.set_client_flags(flags)
+  9.2.33 Method MySQLConnection.start_transaction()
+  9.2.34 Property MySQLConnection.autocommit
+  9.2.35 Property MySQLConnection.charset_name
+  9.2.36 Property MySQLConnection.collation_name
+  9.2.37 Property MySQLConnection.connection_id
+  9.2.38 Property MySQLConnection.database
+  9.2.39 Property MySQLConnection.get_warnings
+  9.2.40 Property MySQLConnection.in_transaction
+  9.2.41 Property MySQLConnection.raise_on_warnings
+  9.2.42 Property MySQLConnection.server_host
+  9.2.43 Property MySQLConnection.server_port
+  9.2.44 Property MySQLConnection.sql_mode
+  9.2.45 Property MySQLConnection.time_zone
+  9.2.46 Property MySQLConnection.unix_socket
+  9.2.47 Property MySQLConnection.user
+
+9.3 Class pooling.MySQLConnectionPool
+  9.3.1 Constructor pooling.MySQLConnectionPool
+  9.3.2 Method MySQLConnectionPool.add_connection()
+  9.3.3 Method MySQLConnectionPool.get_connection()
+  9.3.4 Method MySQLConnectionPool.set_config()
+  9.3.5 Property MySQLConnectionPool.pool_name
+
+9.4 Class pooling.PooledMySQLConnection
+  9.4.1 Constructor pooling.PooledMySQLConnection
+  9.4.2 Method PooledMySQLConnection.close()
+  9.4.3 Method PooledMySQLConnection.config()
+  9.4.4 Property PooledMySQLConnection.pool_name
+
+9.5 Class cursor.MySQLCursor
+  9.5.1 Constructor cursor.MySQLCursor
+  9.5.2 Method MySQLCursor.callproc(procname, args=())
+  9.5.3 Method MySQLCursor.close()
+  9.5.4 Method MySQLCursor.execute(operation, params=None, multi=False)
+  9.5.5 Method MySQLCursor.executemany(operation, seq_params)
+  9.5.6 Method MySQLCursor.fetchall()
+  9.5.7 Method MySQLCursor.fetchmany(size=1)
+  9.5.8 Method MySQLCursor.fetchone()
+  9.5.9 Method MySQLCursor.fetchwarnings()
+  9.5.10 Method MySQLCursor.stored_results()
+  9.5.11 Property MySQLCursor.column_names
+  9.5.12 Property MySQLCursor.description
+  9.5.13 Property MySQLCursor.lastrowid
+  9.5.14 Property MySQLCursor.statement
+  9.5.15 Property MySQLCursor.with_rows
+
+9.6 Class cursor.MySQLCursorBuffered
+
+9.7 Class cursor.MySQLCursorPrepared
+
+9.8 Class constants.ClientFlag
+
+9.9 Class constants.FieldType
+
+9.10 Class constants.SQLMode
+
+9.11 Class constants.CharacterSet
+
+9.12 Class constants.RefreshOption
+
+9.13 Errors and Exceptions
+  9.13.1 Module errorcode
+  9.13.2 Exception errors.Error
+  9.13.3 Exception errors.DataError
+  9.13.4 Exception errors.DatabaseError
+  9.13.5 Exception errors.IntegrityError
+  9.13.6 Exception errors.InterfaceError
+  9.13.7 Exception errors.InternalError
+  9.13.8 Exception errors.NotSupportedError
+  9.13.9 Exception errors.OperationalError
+  9.13.10 Exception errors.PoolError
+  9.13.11 Exception errors.ProgrammingError
+  9.13.12 Exception errors.Warning
+  9.13.13 Function errors.custom_error_exception(error=None, exception=None)
+
+This section contains the public API reference for Connector/Python. Examples should be considered working for Python 2.7, and Python 3.1 and greater. They might also work for older versions (such as Python 2.4) unless they use features introduced in newer Python versions. For example, exception handling using the as keyword was introduced in Python 2.6 and will not work in Python 2.4.
+
+The following overview shows the mysql.connector package with its modules. Currently, only the most useful modules, classes, and methods for end users are documented.
+
+mysql.connector
+  errorcode
+  errors
+  connection
+  constants
+  conversion
+  cursor
+  dbapi
+  locales
+    eng
+      client_error
+  protocol
+  utils

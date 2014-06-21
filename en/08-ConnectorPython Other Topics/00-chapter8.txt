@@ -1,0 +1,13 @@
+Chapter 8 Connector/Python Other Topics
+
+Table of Contents
+
+8.1 Connector/Python Connection Pooling
+8.2 Connector/Python Fabric Support
+8.3 Connector/Python Django Backend
+
+This section describes additional Connection/Python features:
+  
+  * Connection pooling: Section 8.1, “Connector/Python Connection Pooling”
+  
+  * Django backend for MySQL: Section 8.3, “Connector/Python Django Backend”

@@ -1,0 +1,51 @@
+4.1 Installing Connector/Python from a Binary Distribution
+
+Installers in native package formats are available for Unix and Unix-like systems, and for Windows.
+
+You may need root or administrator privileges to perform the installation operation.
+
+Installing Connector/Python on Microsoft Windows
+
+	Note
+
+		Connector/Python requires python.exe to be in the system's PATH. While installing the Python distribution on your system, either enable Add python.exe to Path or manually add it yourself. The Connector/Python MSI will fail to install if it cannot locate python.exe.
+
+		Download and install Python for Windows from http://python.org/download/.
+
+Windows users can use the Windows MSI Installer (.msi file). To use the MSI Installer, launch it and follow the prompts in the screens it presents to install Connector/Python in the location of your choosing.
+
+This MSI is downloadable at http://dev.mysql.com/downloads/connector/python/. Choose the Connector/Python version appropriate for the Python version that is installed on your system.
+
+Subsequent executions of the Connector/Python MSI permit you to either repair or remove the existing Connector/Python installation.
+
+Installing Connector/Python on Linux Using the MySQL Yum Repository
+
+For EL6 or EL7-based platforms and Fedora 19 or 20, you can install the Connector/Python using the MySQL Yum repository. You must have the MySQL Yum repository on your system's repository list (see Adding the MySQL Yum Repository for details). Make sure your Yum repository setup is up-to-date by running:
+
+shell> sudo yum update mysql-community-release
+
+You can then install Connector/Python by the following command:
+
+shell> sudo yum install mysql-connector-python
+
+See Installing Additional MySQL Products and Components with Yum for more details.
+
+Installing Connector/Python on Linux Using RPM Packages
+
+A Linux RPM package is provided as a file with an .rpm suffix, denoted here as PACKAGE.rpm. To install a given RPM package, use this command:
+
+shell> rpm -i PACKAGE.rpm
+
+RPM provides a feature to verify the integrity and authenticity of packages before installing them. To learn more about this feature, see Verifying Package Integrity Using MD5 Checksums or GnuPG.
+
+Installing Connector/Python on Linux Using Debian Packages
+
+Oracle provides Debian packages for installation on Debian or Debian-like Linux systems. A Debian package is provided as a file with an .deb suffix, denoted here as PACKAGE.deb. To install a given Debian package, use this command:
+
+shell> dpkg -i PACKAGE.deb
+
+Installing Connector/Python on Mac OS X
+
+Download the .dmg file, and install Connector/Python by opening it and double clicking the .pkg file.
+
+This .dmg is downloadable at http://dev.mysql.com/downloads/connector/python/.

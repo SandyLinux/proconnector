@@ -1,0 +1,19 @@
+9.6 Class cursor.MySQLCursorBuffered
+
+This class inherits from cursor.MySQLCursor and, if needed, automatically retrieves rows after an operation has been executed.
+
+MySQLCursorBuffered can be useful in situations where two queries, with small result sets, need to be combined or computed with each other.
+
+You can either use the buffered argument when using the connection's cursor() method, or you can use the buffered connection option to make all cursors created for the connection buffering by default.
+
+import mysql.connector
+
+cnx = mysql.connector.connect()
+
+# Only this particular cursor will buffer results
+cnx.cursor(buffered=True)
+
+# All cursors will be buffering by default
+cnx2 = mysql.connector.connect(buffered=True)
+
+For a practical use case, see Section 6.1, “Tutorial: Raise Employee's Salary Using a Buffering Cursor”.
