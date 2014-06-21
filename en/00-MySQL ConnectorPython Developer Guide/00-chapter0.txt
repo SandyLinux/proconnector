@@ -128,34 +128,34 @@ Preface and Legal Notices
 		9.5.14 Property MySQLCursor.statement
 		9.5.15 Property MySQLCursor.with_rows
 
-9.6 Class cursor.MySQLCursorBuffered
+	9.6 Class cursor.MySQLCursorBuffered
 
-9.7 Class cursor.MySQLCursorPrepared
+	9.7 Class cursor.MySQLCursorPrepared
 
-9.8 Class constants.ClientFlag
+	9.8 Class constants.ClientFlag
 
-9.9 Class constants.FieldType
+	9.9 Class constants.FieldType
 
-9.10 Class constants.SQLMode
+	9.10 Class constants.SQLMode
 
-9.11 Class constants.CharacterSet
+	9.11 Class constants.CharacterSet
 
-9.12 Class constants.RefreshOption
+	9.12 Class constants.RefreshOption
 
-9.13 Errors and Exceptions
-	9.13.1 Module errorcode
-	9.13.2 Exception errors.Error
-	9.13.3 Exception errors.DataError
-	9.13.4 Exception errors.DatabaseError
-	9.13.5 Exception errors.IntegrityError
-	9.13.6 Exception errors.InterfaceError
-	9.13.7 Exception errors.InternalError
-	9.13.8 Exception errors.NotSupportedError
-	9.13.9 Exception errors.OperationalError
-	9.13.10 Exception errors.PoolError
-	9.13.11 Exception errors.ProgrammingError
-	9.13.12 Exception errors.Warning
-	9.13.13 Function errors.custom_error_exception(error=None, exception=None)
+	9.13 Errors and Exceptions
+		9.13.1 Module errorcode
+		9.13.2 Exception errors.Error
+		9.13.3 Exception errors.DataError
+		9.13.4 Exception errors.DatabaseError
+		9.13.5 Exception errors.IntegrityError
+		9.13.6 Exception errors.InterfaceError
+		9.13.7 Exception errors.InternalError
+		9.13.8 Exception errors.NotSupportedError
+		9.13.9 Exception errors.OperationalError
+		9.13.10 Exception errors.PoolError
+		9.13.11 Exception errors.ProgrammingError
+		9.13.12 Exception errors.Warning
+		9.13.13 Function errors.custom_error_exception(error=None, exception=None)
 
 A Licenses for Third-Party Components
 	A.1 Django 1.5.1 License
