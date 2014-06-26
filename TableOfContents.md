@@ -2,7 +2,7 @@
 ==================
 - [首页](index.md)
 - [前言和法律声明](zh/Preface and Legal Notices/01-chapter0.md)
-- 1 [介绍](zh/01-Introduction to MySQL ConnectorPython/01-chapter1.md)
+- 1 [介绍](zh/01-Introduction to MySQL ConnectorPython/00-chapter1.md)
 - 2 [指南](zh/02-Guidelines for Python Developers/01-chapter2.md)
 - 3 [版本](zh/03-ConnectorPython Versions/01-chapter3.md)
 - 4 [安装](zh/04-ConnectorPython Installation/00-chapter4.md)
