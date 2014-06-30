@@ -24,7 +24,7 @@
   - 8.3 [Connector/Python Django后台](zh/08-ConnectorPython Other Topics/03-chapter8.md)
 - 9 [Connector/Python API 参考](zh/09-ConnectorPython API Reference/00-chapter9.md)
   - 9.1 [模块 mysql.connector](zh/09-ConnectorPython API Reference/01-chapter9.md)
-	- 9.1.1 [方法 mysql.connector.connect()](zh/09-ConnectorPython API Reference/01-chapter9.md)
+	- 9.1.1 [方法 mysql.connector.connect()](zh/09-ConnectorPython API Reference/01-chapter9.md#9.1.1 方法 mysql.connector.connect())
 	- 9.1.2 [属性 mysql.connector.apilevel](zh/09-ConnectorPython API Reference/01-chapter9.md)
 	- 9.1.3 [属性 mysql.connector.paramstyle](zh/09-ConnectorPython API Reference/01-chapter9.md)
 	- 9.1.4 [属性 mysql.connector.threadsafety](zh/09-ConnectorPython API Reference/01-chapter9.md)
