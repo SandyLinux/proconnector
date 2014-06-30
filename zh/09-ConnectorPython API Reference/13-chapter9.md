@@ -77,7 +77,7 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 	 |       HY       | DatabaseError              |
 	 +----------------+----------------------------+
 
-9.13.1 模块 errorcode
+## 9.13.1 模块 errorcode
 
 该模块包含MySQL服务器和客户端错误代码，被定义为以错误号为值的模块属性。使用错误代码代替错误号能使得源代码会易读些。
 
@@ -88,7 +88,7 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 查看[Server Error Codes and Messages ](http://dev.mysql.com/doc/refman/5.6/en/error-messages-server.html)和 [Client Error Codes and Messages](http://dev.mysql.com/doc/refman/5.6/en/error-messages-client.html)。
 
 
-9.13.2 异常 errors.Error
+## 9.13.2 异常 errors.Error
 
 该异常是所有在errors模块内其他异常的基类。它能用于当except statement中抓取所有错误。
 
@@ -153,19 +153,19 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 	
 errors.Error是Python StandardError的一个子类。
 
-9.13.3 异常 errors.DataError
+## 9.13.3 异常 errors.DataError
 
 当数据有问题时，抛出这个异常。例如设置不能为NULL的列为NULL，超出列的取值范围，除以零，列数不匹配值数等等。
 	
 errors.DataError是errors.DatabaseError的一个子类。
 
-9.13.4 异常 errors.DatabaseError
+## 9.13.4 异常 errors.DatabaseError
 
 该异常是不匹配其他异常的任何MySQL错误的默认异常。
 	
 errors.DatabaseError是errors.Error的一个子类。
 
-9.13.5 异常 errors.IntegrityError
+## 9.13.5 异常 errors.IntegrityError
 
 当数据关系的完整性收到影响时，抛出该异常。例如，插入重复的键或者一个外键约束将失败。
 
@@ -180,37 +180,37 @@ errors.DatabaseError是errors.Error的一个子类。
 
 errors.IntegrityError是DatabaseError的一个子类。
 
-9.13.6 异常 errors.InterfaceError
+## 9.13.6 异常 errors.InterfaceError
 
 源自Connector/Python本身的错误抛出该异常。与MySQL服务器无关。
 	
 errors.InterfaceError是errors.Error的一个子类。
 
-9.13.7 异常 errors.InternalError
+## 9.13.7 异常 errors.InternalError
 
 当MySQL服务器遇到一个内部错误时抛出该异常。例如，当发生死锁时。
 
 errors.InternalError是errors.DatabaseError的一个子类。
 
-9.13.8 异常 errors.NotSupportedError
+## 9.13.8 异常 errors.NotSupportedError
 
 当使用的一些特性在该MySQL版本下不支持返回错误时，抛出该异常。当使用函数或者语句不被储存例程支持时，也抛出该异常。
 	
 errors.NotSupportedError是errors.DatabaseError的一个子类。
 
-9.13.9 异常 errors.OperationalError
+## 9.13.9 异常 errors.OperationalError
 
 与MySQL的操作相关的错误抛出该异常。例如，太多的连接，一个主机名不能被解析，失败的握手，服务器正被关闭，通信错误。
 	
 errors.OperationalError是errors.DatabaseError的一个子类。
 
-9.13.10 异常 errors.PoolError
+## 9.13.10 异常 errors.PoolError
 
 连接池错误抛出该异常。
 
 errors.PoolError是errors.Error的一个子类。
 
-9.13.11 异常 errors.ProgrammingError
+## 9.13.11 异常 errors.ProgrammingError
 
 编程错误抛出该异常，例如，当在你的SQL中有一个语法错误或者一个表没发现时。
 
@@ -226,7 +226,7 @@ errors.PoolError是errors.Error的一个子类。
 	
 errors.ProgrammingError是errors.DatabaseError的一个子类。
 	
-9.13.12 异常 errors.Warning
+## 9.13.12 异常 errors.Warning
 
 该异常用于报告重要的警告，然而，Connector/Python不使用它。它是为了兼容Python Database Specification v2.0(PEP-249)。
 
@@ -234,7 +234,7 @@ errors.ProgrammingError是errors.DatabaseError的一个子类。
 	
 errors.Warning是Python StandardError的一个子类。
 
-9.13.13 函数 errors.custom_error_exception(error=None,exception=None)
+## 9.13.13 函数 errors.custom_error_exception(error=None,exception=None)
 
 该方法定义了为MySQL服务器错误自定义异常并返回当前的自定义。
 

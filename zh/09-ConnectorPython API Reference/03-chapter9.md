@@ -3,7 +3,7 @@
 
 该类提供了连接池的实例化和管理。
 	
-9.3.1 构造器 pooling.MySQLConnectionPool
+## 9.3.1 构造器 pooling.MySQLConnectionPool
 
 语法：
 
@@ -25,7 +25,7 @@
 	 dbconfig = {"database":"test","user":"joe",}
 	 cnxpool = mysql.connector.pooling.MySQLConnectionPool(pool_name = "mypool",pool_size = 3,**dbconfig)
 
-9.3.2 方法 MySQLConnectionPool.add_connection()
+## 9.3.2 方法 MySQLConnectionPool.add_connection()
 
 语法：
 	 
@@ -41,7 +41,7 @@
 	 cnxpool.add_connection()    #添加一个新连接到池
 	 cnxpool.add_connection(cnx) #添加存在的连接到池
 
-9.3.3 方法 MySQLConnectionPool.get_connection()
+## 9.3.3 方法 MySQLConnectionPool.get_connection()
 
 语法：
 
@@ -53,7 +53,7 @@
 	
 	 cnx = cnxpool.get_connection()
 
-9.3.4 方法 MySQLConnectionPool.set_config()
+## 9.3.4 方法 MySQLConnectionPool.set_config()
 
 语法：
 	 
@@ -75,7 +75,7 @@
 
 	 cnxpool.set_config(**dbconfig)
 
-9.3.5 属性 MySQLConnectionPool.pool_name
+## 9.3.5 属性 MySQLConnectionPool.pool_name
 
 语法：
 

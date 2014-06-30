@@ -1,4 +1,4 @@
-﻿9.9 类constants.FieldType
+﻿9.9 类 constants.FieldType
 ============================
 
 该类提供所有支持的MySQL field 或者数据类型。当处理原始数据或者定义你自己的转换器的时候，他们是有用的。field type随着每个cursor被储存在每个列的描述中。

@@ -8,7 +8,7 @@ PooledMySQLConnection pooled 连接对象是类似于MySQLConnection unpooled �
 -  一个pooled连接不能被使用config()重新配置。改变连接必须通过池对象本身来完成，稍后会有描述。
 - 一个pooled连接有一个pool_name属性返回池名。
 
-9.4.1 构造器 pooling.PooledMySQLConnection
+## 9.4.1 构造器 pooling.PooledMySQLConnection
 
 语法：
 	
@@ -25,7 +25,7 @@ PooledMySQLConnection pooled 连接对象是类似于MySQLConnection unpooled �
 
 	 pcnx = mysql.connector.pooling.PooledMySQLConnection(cnxpool,cnx)
 
-9.4.2 方法 PooledMySQLConnection.close()
+## 9.4.2 方法 PooledMySQLConnection.close()
 
 语法：
 
@@ -37,11 +37,11 @@ PooledMySQLConnection pooled 连接对象是类似于MySQLConnection unpooled �
 	
 如果pool配置参数改变了，一个返回的连接被关闭并且使用新的配置重新打开，before being returned from the pool again in response to a connection request.
 
-9.4.3 方法 PooledMySQLConnection.config()
+## 9.4.3 方法 PooledMySQLConnection.config()
 
 对于pooled连接，config()方法抛出一个PoolError异常。为pooled连接配置应该通过使用pool对象完成。
 
-9.4.4 属性 PooledMySQLConnection.pool_name
+## 9.4.4 属性 PooledMySQLConnection.pool_name
 
 语法：
 

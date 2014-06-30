@@ -7,13 +7,13 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 - cursor.MySQLCursorBuffered创建一个被缓存的cursor。查看第9.6章，"类 cursor.MySQLCursorBuffered"。
 - cursor.MySQLCursorPrepared为准备执行的语句创建一个cursor。查看第9.7章，"类 cursor.MySQLCursorPrepared"。
 
-9.5.1 构造器 cursor.MySQLCursor
+## 9.5.1 构造器 cursor.MySQLCursor
 
 该构造器带可选项connection初始化实例，该connection参数应该是MySQLConnection类的一个实例。
 
 在多数情况下，MySQLConnection.cursor()方法用于实例化一个MySQLCursor对象。
 
-9.5.2 方法 MySQLCursor.callproc(procname,args=())
+## 9.5.2 方法 MySQLCursor.callproc(procname,args=())
 
 该方法调用给定名称的储存过程。参数args序列必须包含每个参数一个条目，如常规预期的。结果是以输入序列修改过的副本返回。输入参数保持不变。输出和输入/输出参数可能被新值替代。
 
@@ -44,13 +44,13 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 	 cursor.callproc('sp1',args)
 	 print(cursor.fetchone())
 
-9.5.3 方法 MySQLCursor.close()
+## 9.5.3 方法 MySQLCursor.close()
 
 该方法关闭MySQL cursor，重置所有结果，并确保cursor对象没有引用的连接对象。
 
 你每次使用完成cursor后用close()
 
-9.5.4 方法 MySQLCursor.execute(operation,params=None,multi=False)
+## 9.5.4 方法 MySQLCursor.execute(operation,params=None,multi=False)
 
 该方法准备给定的数据operation（查询或者命令）。元组中发现的参数或者字典params被绑定到operation中的变量。变量被以%s(format)或者%(name)s(pyformat)参数风格指定。
 	
@@ -82,7 +82,7 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 
 当multi为True时，返回一个迭代器。
 
-9.5.5 方法 MySQLCursor.executemany(operation,seq_parpams)
+## 9.5.5 方法 MySQLCursor.executemany(operation,seq_parpams)
 
 这个方法准备一个数据库operation（查询或者命令），然后对参数序列或者seq_params中的映射执行它。
 
@@ -100,7 +100,7 @@ executemany()通过迭代参数序列调用execute()方法。然而，插入数�
 
 不可以使用executemany()方法执行多条语句。这样做会抛出一个InternalError异常。
 
-9.5.6 方法 MySQLCursor.fetchall()
+## 9.5.6 方法 MySQLCursor.fetchall()
 
 该方法抓取所有或者剩余的查询结果集的行，以元组列表的形式返回。当没有行的时候，返回一个空列表。
 
@@ -112,7 +112,7 @@ executemany()通过迭代参数序列调用execute()方法。然而，插入数�
 	
 你必须在用相同连接执行新查询的之前抓取所有的行。
 
-9.5.7 方法 MySQLCursor.fetchmany(size=1)
+## 9.5.7 方法 MySQLCursor.fetchmany(size=1)
 
 该方法抓取一个查询结果的下个集合，返回一个元组的列表。当没有更多行可用时，返回一个空列表。
 
@@ -122,7 +122,7 @@ executemany()通过迭代参数序列调用execute()方法。然而，插入数�
 	
 	 你必须在用相同连接执行新查询的之前抓取所有的行。
 
-9.5.8 方法 MySQLCursor.fetchone()
+## 9.5.8 方法 MySQLCursor.fetchone()
 
 该方法获取查询结果集的下行，返回单个序列，或者当没有更多行可用时返回None。返回的元组包含MySQL服务器返回数据转换为Python对象。
 
@@ -145,7 +145,7 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 
 	你必须在用相同连接执行新查询的之前抓取所有的行。
 
-9.5.9 方法 MySQLCursor.fetchwarnings()
+## 9.5.9 方法 MySQLCursor.fetchwarnings()
 
 该方法返回一个元组列表包含上一个执行语句生成的警告。使用连接的get_warnings属性来设置是否警告应被抓取。
 下面的例子展示一个SELECT语句生成一个警告。
@@ -159,7 +159,7 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 
 当发现警告时，有可能抛出错误。查看MySQLConnection.raise_on_warnings属性。
 
-9.5.10 方法 MySQLCursor.stored_results()
+## 9.5.10 方法 MySQLCursor.stored_results()
 
 该方法返回一个列表迭代器对象，用于处理一个用callproc()方法调用储存过程后产生的结果集。
 
@@ -172,7 +172,7 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 
 结果集一直可用，直到你执行另外的操作或者你调用另外的储存过程。
 
-9.5.11 属性 MySQLCursor.column_names
+## 9.5.11 属性 MySQLCursor.column_names
 
 这个只读属性以Unicode字符串序列的形式返回结果集的列名。
 
@@ -183,7 +183,7 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 		
 	 print("{last_name},{first_name}:{hire_date}".format(row))
 
-9.5.12 属性 MySQLCursor.description
+## 9.5.12 属性 MySQLCursor.description
 
 这个只读属性返回一个描述结果集中列的元组列表。每个元组包含值如下：
 
@@ -235,17 +235,17 @@ column_flags值是constants.FieldFlag类的一个实例。查看怎么解释它�
 	 >>>from mysql.connector import FieldFlag
 	 >>>FieldFlag.desc
 
-9.5.13 属性 MySQLCursor.lastrowid
+## 9.5.13 属性 MySQLCursor.lastrowid
 
 该只读属性返回最新修改行的row ID。例如，如果你在一个表中插入一条记录，该表包含一个AUTO_INCREMENT列，lastrowid返回这个新行的AUTO_INCREMENT值。查看[第5.3章 使用Connector/Python插入数据](../05-ConnectorPython Coding Examples/03-chapter5.md)。
 
-9.5.14 属性 MySQLCursor.statement
+## 9.5.14 属性 MySQLCursor.statement
 
 该只读属性以字符串的形式返回最后执行的语句。该字符串能包含多条语句，如果一个多条语句字符串被执行的话。
 
 该statement属性对应调试和显示什么被发送到MySQL服务器了很有用。
 
-9.5.15 属性 MySQLCursor.with_rows
+## 9.5.15 属性 MySQLCursor.with_rows
 
 当执行的操作的结果提供行，该只读属性返回True。
 

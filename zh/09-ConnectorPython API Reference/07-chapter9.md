@@ -1,4 +1,4 @@
-﻿9.7 类cursor.MySQLCursorPrepared
+﻿9.7 类 cursor.MySQLCursorPrepared
 ===================================
 
 一种方法是执行一个prepared SQL语句是使用PREPARE和EXECUTE语句。然而，对于反复用不同的数据执行相同语句的不同执行，使用二进制客户端/服务器协议来发送和接收数据更有效。了解更多该协议的信息，查看[C API Prepared Statements](http://dev.mysql.com/doc/refman/5.6/en/c-api-prepared-statements.html).
