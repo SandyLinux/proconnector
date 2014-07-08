@@ -1,85 +1,55 @@
 ﻿第7章 Connector/Python 连接参数
 ==================================
-可以用mysql.connector.connect()函数或者mysql.connector.MySQLConnection()类建立与MySQL服务器的连接。
+可以用`mysql.connector.connect()`函数或者`mysql.connector.MySQLConnection()`类建立与MySQL服务器的连接。
+
+'''python
 
 	 cnx = mysql.connector.connect(user='joe',database='test')
 	 cnx = MySQLConnection(user='joe',database='test')	
+'''
 
 下表描述的参数用于启动连接。带星号的参数表明同义的参数名，只是为兼容其他Python的MySQL驱动。Oracle建议不要使用这些替代名。
 
 	
 表7.1 Connector/Python的连接参数
 
-	 +------------------+------------------+--------------------------------------------------+
-	 |Argument Name     |  Default         |   Description                                    |
-	 +------------------+------------------+--------------------------------------------------+
-	 |user(username*)   |                  |  用于MySQL服务进行身份认证的用户名。             |
-	 +------------------+------------------+--------------------------------------------------+
-	 |password(passwd*) |                  |  用于MySQL服务进行身份认证用户名的密码。         |
-	 +------------------+------------------+--------------------------------------------------+
-	 |database(db*)     |                  |  当连接MySQL服务器时，使用的数据库名称。         |
-	 +------------------+------------------+--------------------------------------------------+
-	 |host              |  127.0.0.1       |  MySQL服务器的ip地址或者主机名称。               |
-	 +------------------+------------------+--------------------------------------------------+
-	 |port              |  3306            |  MySQL服务器的TCP/IP端口号。必须是整数。         |
-	 +------------------+------------------+--------------------------------------------------+
-	 |unix_socket       |                  |  Unix套接字文件的位置。                          |
-	 +------------------+------------------+--------------------------------------------------+
-	 |use_unicode       |  True            |  是否使用Unicode。                               |
-	 +------------------+------------------+--------------------------------------------------+
-	 |charset           |  utf8            |  使用哪种MySQL字符集                             |
-	 +------------------+------------------+--------------------------------------------------+
-	 |collaction        |  utf8_general_ci |  使用哪种MySQL collation                         |
-	 +------------------+------------------+--------------------------------------------------+
-	 |autocommit        |  False           |  是否autocommit transactions。                   |
-	 +------------------+------------------+--------------------------------------------------+
-	 |time_zone         |                  |  在连接时，设置time_zone会话变量。               |
-	 +------------------+------------------+--------------------------------------------------+
-	 |sql_mode          |                  |  在连接时，设置sql_mode会话变量。                |
-	 +------------------+------------------+--------------------------------------------------+
-	 |get_warnings      |  False           |  是否抓取警告                                    |
-	 +------------------+------------------+--------------------------------------------------+
-	 |raise_on_warnings |  False           |  在发生警告时，是否抛出异常。                    |
-	 +------------------+------------------+--------------------------------------------------+
-	 |connection_timeout|                  |  TCP和Unix socket连接的超时时间                  |
-	 |(connect_timeout*)|                  |                                                  |
-	 +------------------+------------------+--------------------------------------------------+
-	 |client_flags      |                  |  MySQL客户端标志                                 |
-	 +------------------+------------------+--------------------------------------------------+
-	 |buffered          |  False           |  在执行查询后，cursor对象是否立即抓取结果。      |
-	 +------------------+------------------+--------------------------------------------------+
-	 |raw               |  False           |  是否原样返回MySQL的结果，而不转换为Python类型。 |
-	 +------------------+------------------+--------------------------------------------------+
-	 |ssl_ca            |                  |  包含SSL certificate authority的的文件。         |
-	 +------------------+------------------+--------------------------------------------------+
-	 |ssl_cert          |                  |  包含SSL certificate file的文件。                |
-	 +------------------+------------------+--------------------------------------------------+
-	 |ssl_key           |                  |  包含SSL key的文件。                             |
-	 +------------------+------------------+--------------------------------------------------+
-	 |ssl_verify_cert   |  False           |  当设置为True时，检查由ssl_ca选项指定的证书文件。|
-	 |                  |                  |  任何不匹配会导致一个ValueError的异常。          |
-	 +------------------+------------------+--------------------------------------------------+
-	 |force_ipv6        |  False           |  当设置为True时，当地址解析为IPv4和IPv6时，      |
-	 |                  |                  |  使用IPv6。默认使用IPv4                          |
-	 +------------------+------------------+--------------------------------------------------+
-	 |dsn               |                  |  不支持（当使用时，抛出NotSupportedError异常）   |
-	 +------------------+------------------+--------------------------------------------------+
-	 |pool_name         |                  |  连接pool名称。1.1.1增加。                       |
-	 +------------------+------------------+--------------------------------------------------+
-	 |pool_size         |  5               |  连接pool大小。1.1.1增加。                       |
-	 +------------------+------------------+--------------------------------------------------+
-	 |pool_reset_session|  True            |  当连接返回pool时，是否重置会话变量。1.1.5增加。 |
-	 +------------------+------------------+--------------------------------------------------+
-	 |compress          |  False           |  是否使用compressed 客户端/服务器 协议。1.1.2增加|
- 	 +------------------+------------------+--------------------------------------------------+
-	 |converter_class   |                  |  使用converter类。1.1.2增加。                    |
- 	 +------------------+------------------+--------------------------------------------------+
-	 |fabric            |                  |  MySQL Fabric 连接参数。1.2.0增加。              |
-	 +------------------+------------------+--------------------------------------------------+
-	 |auth_plugin       |                  |  使用验证插件。1.2.1增加。                       |
-	 +------------------+------------------+--------------------------------------------------+
-	 |failover          |                  |  服务器failover序列。1.2.1增加。                 |
-	 +------------------+------------------+--------------------------------------------------+
+|Argument Name     |  Default         |   Description                                    |
+|*---------------- |*-----------------|*------------------------------------------------ |
+|user(username*)   |                  |  用于MySQL服务进行身份认证的用户名。             |
+|password(passwd*) |                  |  用于MySQL服务进行身份认证用户名的密码。         |
+|database(db*)     |                  |  当连接MySQL服务器时，使用的数据库名称。         |
+|host              |  127.0.0.1       |  MySQL服务器的ip地址或者主机名称。               |
+|port              |  3306            |  MySQL服务器的TCP/IP端口号。必须是整数。         |
+|unix_socket       |                  |  Unix套接字文件的位置。                          |
+|use_unicode       |  True            |  是否使用Unicode。                               |
+|charset           |  utf8            |  使用哪种MySQL字符集                             |
+|collaction        |  utf8_general_ci |  使用哪种MySQL collation                         |
+|autocommit        |  False           |  是否autocommit transactions。                   |
+|time_zone         |                  |  在连接时，设置time_zone会话变量。               |
+|sql_mode          |                  |  在连接时，设置sql_mode会话变量。                |
+|get_warnings      |  False           |  是否抓取警告                                    |
+|raise_on_warnings |  False           |  在发生警告时，是否抛出异常。                    |
+|connection_timeout|                  |  TCP和Unix socket连接的超时时间                  |
+|(connect_timeout*)|                  |                                                  |
+|client_flags      |                  |  MySQL客户端标志                                 |
+|buffered          |  False           |  在执行查询后，cursor对象是否立即抓取结果。      |
+|raw               |  False           |  是否原样返回MySQL的结果，而不转换为Python类型。 |
+|ssl_ca            |                  |  包含SSL certificate authority的的文件。         |
+|ssl_cert          |                  |  包含SSL certificate file的文件。                |
+|ssl_key           |                  |  包含SSL key的文件。                             |
+|ssl_verify_cert   |  False           |  当设置为True时，检查由ssl_ca选项指定的证书文件。|
+|                  |                  |  任何不匹配会导致一个ValueError的异常。          |
+|force_ipv6        |  False           |  当设置为True时，当地址解析为IPv4和IPv6时，      |
+|                  |                  |  使用IPv6。默认使用IPv4                          |
+|dsn               |                  |  不支持（当使用时，抛出NotSupportedError异常）   |
+|pool_name         |                  |  连接pool名称。1.1.1增加。                       |
+|pool_size         |  5               |  连接pool大小。1.1.1增加。                       |
+|pool_reset_session|  True            |  当连接返回pool时，是否重置会话变量。1.1.5增加。 |
+|compress          |  False           |  是否使用compressed 客户端/服务器 协议。1.1.2增加|
+|converter_class   |                  |  使用converter类。1.1.2增加。                    |
+|fabric            |                  |  MySQL Fabric 连接参数。1.2.0增加。              |
+|auth_plugin       |                  |  使用验证插件。1.2.1增加。                       |
+|failover          |                  |  服务器failover序列。1.2.1增加。                 |
 
 ## MySQL 认证
 
@@ -96,7 +66,7 @@ MySQL认证是使用username和password参数。
 
 MySQL Connector/Python 1.2.1和以上支持MySQL 5.6中的认证插件。它包含mysql_clear_password和sha256_password,它们都需要一个SSL连接。sha256_password不能工作在一个非SSL连接上，因为Connector/Python不支持RSA加密。
 
-connect()方法支持一个auth_plugin参数用于强制使用某一特定的插件。例如，如果服务器被配置为默认使用sha256_password，你想要连接一个帐号使用mysql_natvie_password认证，你可以使用SSL连接或者指定auth_plugin="mysql_native_password"。
+`connect()`方法支持一个auth_plugin参数用于强制使用某一特定的插件。例如，如果服务器被配置为默认使用sha256_password，你想要连接一个帐号使用mysql_natvie_password认证，你可以使用SSL连接或者指定`auth_plugin="mysql_native_password"`。
 
 ## 字符编码
 
@@ -104,7 +74,7 @@ connect()方法支持一个auth_plugin参数用于强制使用某一特定的插
 
 ## 事务
 
-autocommit值默认为False，因此事务不会自动提交。在你的应用中做插入，更新，删除操作后，调用MySQLConnection实例的commit()方法。对于数据的一致性和高吞吐量的写操作，当使用InnoDB或者其他事务性表的时候，最好保持autocommit配置选项关闭。
+autocommit值默认为False，因此事务不会自动提交。在你的应用中做插入，更新，删除操作后，调用MySQLConnection实例的`commit()`方法。对于数据的一致性和高吞吐量的写操作，当使用InnoDB或者其他事务性表的时候，最好保持autocommit配置选项关闭。
 
 ## 时区
 
@@ -116,7 +86,7 @@ MySQL支持所谓的SQL模式。它会改变服务器全局的或者每个连接
 
 ## 故障排除和错误处理
 
-当get_warnings设置为True时，会自动抓取查询所产生的警告。你也可以通过设置raise_on_warnings为True来立即抛出有一个异常。请考虑使用MySQL sql_mode设置来转变警告为错误。
+当`get_warnings`设置为`True`时，会自动抓取查询所产生的警告。你也可以通过设置`raise_on_warnings`为`True`来立即抛出有一个异常。请考虑使用MySQL sql_mode设置来转变警告为错误。
 
 使用connection_timeout参数来为一个连接设置一个超时值。
 
@@ -124,13 +94,19 @@ MySQL支持所谓的SQL模式。它会改变服务器全局的或者每个连接
 
 MySQL使用client flags来开启和关闭特征。使用client_flags参数，你控制设置什么。要查看哪些标志可用，使用下列代码：
 
+'''python
+
 	 from mysql.connector.constants import ClientFlag
 	 print '\n'.join(ClientFlag.get_full_info()
+'''
 	 
 如果client_flags没有指定（即，为0），MySQL v4.1和以后版本使用默认值。如果你指定一个大于0的整数，确保所有的标志都设置正确。一种更好的方法来设置和不设置个别标志是使用列表。例如，设置FOUND_ROWS,关闭默认的LONG_FLAG:
 
+'''python
+
 	 flags = [ClientFlag.FOUND_ROWS,-ClientFlag.LONG_FLAG]
 	 mysql.connector.connect(client_flags=flags)
+'''
 	 
 ## 缓存结果集
 
@@ -145,6 +121,8 @@ MySQL使用client flags来开启和关闭特征。使用client_flags参数，你
 当你的[python安装支持SSL](https://docs.python.org/2/library/ssl.html)，即，当它兼容OpenSSL库时，可以使用SSL连接。当你提供ssl_ca,ssl_key,ssl_cert参数时，连接转换到SSL，并且client_flags选项自动包含ClientFlags.SSL值，你可以用它与compressed设置为True组合使用。
 
 对于Connector/Python 1.2.1，可用仅用ssl_ca参数来建立SSL连接。ssl_key和ssl_cert参数是可选的。然而，当一个给定时，另一个也必须给定，否则抛出一个AttributeError。
+
+'''python
 
 	 # Note (Example is valid for Python v2 and v3)
 	 from __future__ import print_function
@@ -170,6 +148,7 @@ MySQL使用client flags来开启和关闭特征。使用client_flags参数，你
 	 print(cur.fetchone())
 	 cur.close()
 	 cnx.close()
+'''
 	 
 ## 连接池
 
@@ -181,7 +160,7 @@ pool_reset_session允许控制当连接返回到连接池时，会话变量是�
 
 ## 协议压缩
 
-布尔型compress参数指明是否使用压缩的client/server协议（默认为False）。它提供了一种更简便的替代方法是设置ClientFlag.COMPRESS标志。该参数在Connector/Python 1.1.2中可用。
+布尔型compress参数指明是否使用压缩的client/server协议（默认为`False`）。它提供了一种更简便的替代方法是设置ClientFlag.COMPRESS标志。该参数在Connector/Python 1.1.2中可用。
 
 ## Converter 类
 
