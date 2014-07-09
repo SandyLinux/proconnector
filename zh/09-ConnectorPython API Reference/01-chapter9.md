@@ -9,7 +9,10 @@ mysql.connector模块提供top-level方法和属性。
 	
 与Mysql服务器的连接可以通过mysql.connector.connect()方法或者mysql.connector.MySQLConnection()类建立。
 
+```python
+
 	 cnx = mysql.connector.connect(user='joe',database='test')cnx = MySQLConnect(user='joe',database='test')
+```
 
 ## 9.1.2 属性 mysql.connector.apilevel
 

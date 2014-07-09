@@ -9,81 +9,51 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 
 表9.1
 
-	 +----------------+----------------------------+
-	 | SQLSTATE Class | Connector/Python Exception |
-	 +----------------+----------------------------+
-	 |       02       | DataError                  |
-	 +----------------+----------------------------+
-	 |       02       | DataError                  |
-	 +----------------+----------------------------+
-	 |       07       | DatabaseError              |
-	 +----------------+----------------------------+
-	 |       08       | OperationalError           |
-	 +----------------+----------------------------+
-	 |       0A       | NotSupportedError          |
-	 +----------------+----------------------------+
-	 |       21       | DataError                  |
-	 +----------------+----------------------------+
-	 |       22       | DataError                  |
-	 +----------------+----------------------------+
-	 |       23       | IntegrityError             |
-	 +----------------+----------------------------+
-	 |       24       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       25       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       26       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       27       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       28       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       2A       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       2B       | DatabaseError              |
-	 +----------------+----------------------------+
-	 |       2C       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       2D       | DatabaseError              |
-	 +----------------+----------------------------+
-	 |       2E       | DatabaseError              |
-	 +----------------+----------------------------+
-	 |       33       | DatabaseError              |
-	 +----------------+----------------------------+
-	 |       34       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       35       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       37       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       3C       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       3D       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       3F       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       40       | InternalError              |
-	 +----------------+----------------------------+
-	 |       42       | ProgrammingError           |
-	 +----------------+----------------------------+
-	 |       44       | InternalError              |
-	 +----------------+----------------------------+
-	 |       HZ       | OperationalError           |
-	 +----------------+----------------------------+
-	 |       XA       | IntegrityError             |
-	 +----------------+----------------------------+
-	 |       0K       | OperationalError           |
-	 +----------------+----------------------------+
-	 |       HY       | DatabaseError              |
-	 +----------------+----------------------------+
+| SQLSTATE Class | Connector/Python Exception |
+|:--------------:|:---------------------------|
+|       02       | DataError                  |
+|       02       | DataError                  |
+|       07       | DatabaseError              |
+|       08       | OperationalError           |
+|       0A       | NotSupportedError          |
+|       21       | DataError                  |
+|       22       | DataError                  |
+|       23       | IntegrityError             |
+|       24       | ProgrammingError           |
+|       25       | ProgrammingError           |
+|       26       | ProgrammingError           |
+|       27       | ProgrammingError           |
+|       28       | ProgrammingError           |
+|       2A       | ProgrammingError           |
+|       2B       | DatabaseError              |
+|       2C       | ProgrammingError           |
+|       2D       | DatabaseError              |
+|       2E       | DatabaseError              |
+|       33       | DatabaseError              |
+|       34       | ProgrammingError           |
+|       35       | ProgrammingError           |
+|       37       | ProgrammingError           |
+|       3C       | ProgrammingError           |
+|       3D       | ProgrammingError           |
+|       3F       | ProgrammingError           |
+|       40       | InternalError              |
+|       42       | ProgrammingError           |
+|       44       | InternalError              |
+|       HZ       | OperationalError           |
+|       XA       | IntegrityError             |
+|       0K       | OperationalError           |
+|       HY       | DatabaseError              |
 
 ## 9.13.1 模块 errorcode
 
 该模块包含MySQL服务器和客户端错误代码，被定义为以错误号为值的模块属性。使用错误代码代替错误号能使得源代码会易读些。
 
+```python
+
 	 >>>from mysql.connector import errorcode
 	 >>>errorcode.ER_BAD_TABLE_ERROR
 	 1051
+```
 
 查看[Server Error Codes and Messages ](http://dev.mysql.com/doc/refman/5.6/en/error-messages-server.html)和 [Client Error Codes and Messages](http://dev.mysql.com/doc/refman/5.6/en/error-messages-client.html)。
 
@@ -94,6 +64,8 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 
 下面的例子显示我们怎么抓取语法错误：
 
+```python
+
 	 import mysql.connector
 	 try:
 	  	 cnx = mysql.connector.connect(user='scott',database='employees')
@@ -102,10 +74,13 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 		 cnx.close()
 	 except mysql.connector.Error as err:
 		 print("Something went wrong: {}".format(err))
+```
 
 初始化异常支持几个可选的参数，亦即是msg,errno,values和sqlstate。他们所有都是可选的并且默认为None。errors.Error被Connector/Python内部用于抛出MySQL 客户端和服务器错误，不应被用于你的应用来抛异常。
 	
 下面的例子显示当不使用参数或者使用一组参数时的结果：
+
+```python
 	
 	 >>> from mysql.connector.errors import Error
 	 >>> str(Error())
@@ -122,12 +97,15 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 
 	 >>> str(Error(errno=1146, sqlstate='42S02', msg="Table 'test.spam' doesn't exist"))
 	 "1146 (42S02): Table 'test.spam' doesn't exist"
+```
 
 使用错误号为1146的例子用于Connector/Python接收到MySQL 服务器一个错误的包的时候。信息被解析过并被传递给Error异常，如图所示。
 
 每个Error 异常的子类能用前面提到的参数初始化。此外，每个实例含有errno,msg和sqlstate属性，可以用于你的代码中。
 
 下面的例子显示怎么处理当删除一个不存在的表（DROP TABLE 语句中不包含IF EXISTS引起的）的错误：
+
+```python
 	
 	 import mysql.connector
 	 from mysql.connector import errorcode
@@ -139,8 +117,11 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 			 print("Creating table spam")
 		 else:
 		  raise
+```
 
 在Connector/Python 1.1.1之前，传递给errors.Error()的原信息以这样的方式不会保存，它可以被检索。相反，Error.msg属性被带错误号和SQLSTATE 值格式化。随着1.1.1，仅原信息被保存在Error.msg属性中。格式化的值连同错误号和SQLSTATE 值可以通过打印或者错误对象的字符串表现形式来获得。例如：
+
+```python
 
 	 try:
 		 conn = mysql.connector.connect(database='baddb')
@@ -150,6 +131,7 @@ MySQL服务器的错误是根据他们的SQLSTATE值映射到Python异常（查�
 		 print "Error message:",e.msg
 		 print "Error:",es = str(e)
 		 print "Error:",s
+```
 	
 errors.Error是Python StandardError的一个子类。
 
@@ -171,12 +153,15 @@ errors.DatabaseError是errors.Error的一个子类。
 
 下面的例子显示重复的键错误被以IntegrityError异常被抛出：
 
+```python
+
 	 cursor.execute("CREATE TABLE t1 (id int,PRIMARY KEY (id))")
  	 try:
 		 cursor.execute("INSERT INTO t1 (id) VALUES (1)")
 		 cursor.execute("INSERT INTO t1 (id) VALUES (1)")
 	 except mysql.connector.IntegrityError as err:
 		 print("Error:{}".format(err))
+```
 
 errors.IntegrityError是DatabaseError的一个子类。
 
@@ -216,6 +201,8 @@ errors.PoolError是errors.Error的一个子类。
 
 下面的例子显示怎么处理语法错误：
 
+```python
+
 	 try:
 		 cursor.execute("CREATE DESK t1 (id int,PRIMARY KEY (id))")
 	 except mysql.connector.ProgrammingError as err:
@@ -223,6 +210,7 @@ errors.PoolError是errors.Error的一个子类。
 		 print("Check your syntax!")
  	 else:
 		 print("Error:{}".format(err))
+```
 	
 errors.ProgrammingError是errors.DatabaseError的一个子类。
 	
@@ -241,14 +229,17 @@ errors.Warning是Python StandardError的一个子类。
 如果error是一个MySQL服务器的错误号，你必须也需要传递exception类。error参数可以是一个字典，在这种情况下键是服务器错误号，值是被抛出的异常的类。
 	
 用空字典重置自定义：
-	
-	 import mysql.connectorfrom mysql.connector import errorcode
 
-	 #服务器1028错误抛出一个DatabaseError
-	 mysql.connector.custom_error_exception(1028,mysql.connector.DatabaseError)
+```python
 	
-	 #或者使用字典
-	 mysql.connector.custom_error_excepiton({1028:mysql.connector.DatabaseError,1029:mysql.connector.OperationalError,})
+import mysql.connectorfrom mysql.connector import errorcode
 
-	 #传递一个空字典，重置自定义
-	 mysql.connector.custom_error_exception({})
+#服务器1028错误抛出一个DatabaseError
+mysql.connector.custom_error_exception(1028,mysql.connector.DatabaseError)
+	
+#或者使用字典
+mysql.connector.custom_error_excepiton({1028:mysql.connector.DatabaseError,1029:mysql.connector.OperationalError,})
+
+#传递一个空字典，重置自定义
+mysql.connector.custom_error_exception({})
+```

@@ -7,17 +7,23 @@
 
 - 简单的语法是在cursor()方法使用一个prepared=True参数，该语法在Connector/Python 1.1.2中可用。
 
+```python
+
  	 import mysql.connector
 	 cnx = mysql.connector.connect(database='employees')
 	 cursor = cnx.cursor(prepared=True)
+```
 
 - 另外，创建一个MySQLCursorPrepared类的实例使用cursor()方法的cursor_class参数。MySQLCursorPrepared在Connector/Python 1.1.0中可用。
+
+```python
 
 	 import mysql.connector	
 	 from mysql.connector.cursor import MySQLCursorPrepared
 		
 	 cnx = mysql.connector.connect(database='employees')
 	 cursor = cnx.cursor(cursor_class=MySQLCursorPrepared)
+```
 
 一个MySQLCursorPrepared类实例的工作原理是这样的：
 
@@ -26,12 +32,15 @@
 
 例如：
 
+```python
+
 	 cursor = cnx.cursor(prepared=True)
 	 stmt = "SELECT fullname FROM employees WHERE id = %s" # (1)
 	 cursor.execute(stmt,(5,))                             # (2)
 	 # ... fetch data ...
 	 cursor.execute(stmt,(10,))                            # (3)
 	 # ... fetch data ...
+```
 
 (1) statement中的%s是一个参数标记，不要放引号吧参数标记括起来。
 (2) 对于第一次调用execute()方法，cursor准备该statement。如果数据是在同一个调用中给出，它也执行该statement，你应该抓取数据。

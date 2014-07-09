@@ -5,6 +5,8 @@
 
 下面的例子显示怎样在结果集中为每个列打印数据类型的名称。
 
+```python
+
 	 from __future__ import print_function
 	 import mysql.connector
 	 from mysql.connector import FieldType
@@ -22,5 +24,6 @@
 	  print("Column {} has type {}".format(colname,FieldType.get_info(coltype)))
 	 cursor.close()
 	 cnx.close()
+```
 
 FieldType类不能被实例化。

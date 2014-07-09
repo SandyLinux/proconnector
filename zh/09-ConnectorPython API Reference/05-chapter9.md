@@ -1,4 +1,5 @@
 ﻿9.5 类 cursor.MySQLCursor
+============================
 
 MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使用MySQLConnection对象与MySQL服务器进行交互。
 
@@ -11,7 +12,7 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 
 该构造器带可选项connection初始化实例，该connection参数应该是MySQLConnection类的一个实例。
 
-在多数情况下，MySQLConnection.cursor()方法用于实例化一个MySQLCursor对象。
+在多数情况下，`MySQLConnection.cursor()`方法用于实例化一个MySQLCursor对象。
 
 ## 9.5.2 方法 MySQLCursor.callproc(procname,args=())
 
@@ -20,6 +21,8 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 储存过程产生的结果集是自动抓取和以MySQLCursorBuffered实例储存。了解更多信息，查看stored_results()。
 
 下面的例子展示怎样执行一个带两个参数的的储存过程，值相乘并返回乘积：
+
+```python
 
 	 #乘法储存过程的定义：
 	 #CREATE PROCEDURE multiply(IN pFac1 INT,IN pFac2 INT,OUT pProd INT)
@@ -30,19 +33,26 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 	 >>>args = (5,5,0)
 	 >>>cursor.callproc('multiply',args)
 	 ('5','5','5L')
+```
 
-	 Connector/Python1.2.1和以上允许指定参数类型。要做到这点，就要指定一个参数为一个两元素的元组包含参数的值和类型。假设一个过程sp1()有这样的定义：
+Connector/Python1.2.1和以上允许指定参数类型。要做到这点，就要指定一个参数为一个两元素的元组包含参数的值和类型。假设一个过程sp1()有这样的定义：
+
+```sql
 
 	 CREATE PROCEDURE sp1(IN pStr1 VARCHAR(20),IN pStr2 VARCHAR(20),OUT pConCat VARCHAR(100))
 	 BEGIN
 	  SET pConCat := CONCAT(pStr1,pStr2);
 	 END
+```
 
 从Connection/Python中执行这个过程，指定OUT参数的类型，这样做：
+
+```python
 
 	 args = ('ham','spam',(0,'CHAR'))
 	 cursor.callproc('sp1',args)
 	 print(cursor.fetchone())
+```
 
 ## 9.5.3 方法 MySQLCursor.close()
 
@@ -56,11 +66,14 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 	
 这个例子插入一个新雇员，然后选择他的数据：
 
+```python
+
 	 insert = ("INSERT INTO employees (emp_no,first_name,last_name,hire_date)"          
 	 		   "VALUES (%s,%s,%s,%s)")
 	 data = (2,'Jane','Doe',datetime.date(2012,3,23))cursor.execute(insert,data)
 	 select = "SELECT * FROM employees WHERE emp_no = %(emp_no)s"
 	 cursor.execute(select,{'emp_no':2})
+```
 	
 注意:
 
@@ -70,13 +83,16 @@ MySQLCursor类用于实例化执行操作的对象，例如SQL查询。他们使
 	
 下面的例子在一个operation中选择和插入数据并显示结果：
 
+```python
+
 	 operation = 'SELECT 1;INSERT INTO t1 VALUES();SELECT 2'
 	 for result in cursor.execute(operation):
 	 if result.with_rows:
-	  print("Statement '{}'has following rows:".format(result.statement))
-	  print(result.fetchall())
+	 	print("Statement '{}'has following rows:".format(result.statement))
+	 	print(result.fetchall())
 	 else:
-	  print("Affected row(s) by query '{}' was {}".format(result.statement,result.rowcount))
+	 	print("Affected row(s) by query '{}' was {}".format(result.statement,result.rowcount))
+```
 
 如果连接被配置为抓取警告，被operation生成的警告通过MySQLCursor.fetchwarnings()方法可用。
 
@@ -90,13 +106,19 @@ executemany()通过迭代参数序列调用execute()方法。然而，插入数�
 
 下面这个例子插入3条记录：
 
+```python
+
 	 data = [('Jane',date(2005,2,12)),('Joe',date(2006,5,23)),('John',date(2010,10,3)),]
 	 stmt = "INSERT INTO employees(first_name,hire_date) VALUES(%s,%s)"
 	 cursor.executemany(stmt,data)
+```
 
 在上面的例子中，INSERT语句发送给MySQL会是：
 
+```sql
+
 	 INSERT INTO employees(first_name,hire_date)	VALUES('Jane','2005-02-12'),('Joe','2006-05-23'),('John','2010-10-03')
+```
 
 不可以使用executemany()方法执行多条语句。这样做会抛出一个InternalError异常。
 
@@ -106,9 +128,12 @@ executemany()通过迭代参数序列调用execute()方法。然而，插入数�
 
 下面的例子展示怎么获取第一个2行结果，然后获取剩余的行：
 
+```python
+
 	 >>>cursor.execute("SELECT * FROM employees ORDER BY emp_no")
 	 >>>head_rows = cursor.fetchmany(size=2)
 	 >>>remaining_rows = cursor.fetchall()
+```
 	
 你必须在用相同连接执行新查询的之前抓取所有的行。
 
@@ -129,19 +154,22 @@ executemany()通过迭代参数序列调用execute()方法。然而，插入数�
 fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCursor实例作为迭代器时。
 	
 下面的例子展示了怎么使用fetchone()来处理一个查询结果，首先使用一个while循环，然后使用迭代器：
+
+```python
 	
 	 #使用一个while循环
 	 cursor.execute("SELECT * FROM employees")
 	 row = cursor.fetchone()
 	 while row is not None:
-	  print(row)
-	  row = cursor.fetchone()
+	 	print(row)
+	 	row = cursor.fetchone()
 		
 	 #使用cursor作为迭代器
 		
 	 cursor.execute("SELECT * FROM employees")
 	 for row in cursor:
-	  print(row)
+	 	print(row)
+```
 
 	你必须在用相同连接执行新查询的之前抓取所有的行。
 
@@ -149,6 +177,8 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 
 该方法返回一个元组列表包含上一个执行语句生成的警告。使用连接的get_warnings属性来设置是否警告应被抓取。
 下面的例子展示一个SELECT语句生成一个警告。
+
+```python
 	
 	 >>> cnx.get_warnings = True
 	 >>> cursor.execute('SELECT "a"+1')
@@ -156,6 +186,7 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 	 [(1.0,)]
 	 >>> cursor.fetchwarnings()
 	 [(u'Warning', 1292, u"Truncated incorrect DOUBLE value: 'a'")]
+```
 
 当发现警告时，有可能抛出错误。查看MySQLConnection.raise_on_warnings属性。
 
@@ -164,11 +195,14 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 该方法返回一个列表迭代器对象，用于处理一个用callproc()方法调用储存过程后产生的结果集。
 
 下面的例子执行一个储存过程，产生两个结果集，然后用stored_results()获取他们：
+
+```python
 	
 	 >>>cursor.callproc('sp1')()
 	 >>>for result in cursor.stored_results():
 	  print result.fetchall()
 	 [(1,)][(2,)]
+```
 
 结果集一直可用，直到你执行另外的操作或者你调用另外的储存过程。
 
@@ -177,15 +211,21 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 这个只读属性以Unicode字符串序列的形式返回结果集的列名。
 
 下面的例子展示怎么从包含数据和用column_names为键的元组中创建一个字典：
+
+```python
 	
 	 cursor.execute("SELECT last_name,first_name,hire_date "             
-	                "FROM employees WHERE emp_no = %s",(123,))row = dict(zip(cursor.column_names,cursor.fetchone()))
+	                "FROM employees WHERE emp_no = %s",(123,))
+	 row = dict(zip(cursor.column_names,cursor.fetchone())
 		
 	 print("{last_name},{first_name}:{hire_date}".format(row))
+```
 
 ## 9.5.12 属性 MySQLCursor.description
 
 这个只读属性返回一个描述结果集中列的元组列表。每个元组包含值如下：
+
+```python
 
 	 (column_name,
 	 type,
@@ -195,8 +235,11 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 	 None,
 	 null_ok,
 	 column_flags)
+```
 
 下面的例子展示怎样解释description元组：
+
+```python
 
 	 import mysql.connector
 	 from mysql.connector import FieldType
@@ -205,14 +248,17 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 	 			    "FROM employees WHERE emp_no = %s", (123,))
 		
 	 for i in range(len(cursor.description)):
-	  print("Column {}:".format(i+1))
-	  desc = cursor.description[i]
-	  print("column_name = {}".format(desc[0]))
-	  print("type = {} ({})".format(desc[1], FieldType.get_info(desc[1])))
-	  print("null_ok = {}".format(desc[6]))
-	  print("column_flags = {}".format(desc[7]))
+	 	print("Column {}:".format(i+1))
+	 	desc = cursor.description[i]
+	 	print("column_name = {}".format(desc[0]))
+	 	print("type = {} ({})".format(desc[1], FieldType.get_info(desc[1])))
+	 	print("null_ok = {}".format(desc[6]))
+	 	print("column_flags = {}".format(desc[7]))
+```
 
-输出结果： 
+输出结果：
+
+```python
 
 	 Column 1:
 	 column_name = emp_no
@@ -229,11 +275,15 @@ fetchone()方法被用于fetchall()和fetchmany()。也用于当使用MySQLCurso
 	 type = 10 (DATE)
 	 null_ok = 0
 	 column_flags = 4225
+```
 
 column_flags值是constants.FieldFlag类的一个实例。查看怎么解释它，如下：
+
+```python
 	
 	 >>>from mysql.connector import FieldFlag
 	 >>>FieldFlag.desc
+```
 
 ## 9.5.13 属性 MySQLCursor.lastrowid
 
@@ -251,6 +301,8 @@ column_flags值是constants.FieldFlag类的一个实例。查看怎么解释它�
 
 当有必要决定是否一条语句产生一个结果集和你需要抓取行时，with_rows属性很有用。下面的例子获取SELECT语句返回的行，但是仅仅报告UPDATE语句影响的行的值。
 
+```python
+
 	 import mysql.connector
 	 cnx = mysql.connector.connect(user='scott', database='test')
 	 cursor = cnx.cursor()
@@ -260,3 +312,4 @@ column_flags值是constants.FieldFlag类的一个实例。查看怎么解释它�
 	   result.fetchall()
 	  else:
 	   print("Updated row(s): {}".format(result.rowcount))
+```
