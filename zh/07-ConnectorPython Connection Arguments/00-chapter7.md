@@ -53,7 +53,7 @@ cnx = MySQLConnection(user='joe',database='test')
 
 MySQL认证是使用username和password参数。
 
-** 注意 **：
+** 注意 **
 
 MySQL Connector/Python不支持MySQL版本4.1以前的老的，不太安全的密码协议。
 
