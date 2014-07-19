@@ -4,8 +4,8 @@
 
 ```python
 
-	 cnx = mysql.connector.connect(user='joe',database='test')
-	 cnx = MySQLConnection(user='joe',database='test')	
+cnx = mysql.connector.connect(user='joe',database='test')
+cnx = MySQLConnection(user='joe',database='test')	
 ```
 
 下表描述的参数用于启动连接。带星号的参数表明同义的参数名，只是为兼容其他Python的MySQL驱动。Oracle建议不要使用这些替代名。
@@ -53,10 +53,10 @@
 
 MySQL认证是使用username和password参数。
 
-注意：
+** 注意 **：
 
-      MySQL Connector/Python不支持MySQL版本4.1以前的老的，不太安全的密码协议。
-	 
+MySQL Connector/Python不支持MySQL版本4.1以前的老的，不太安全的密码协议。
+
 当给定了database参数，当前的数据库会被设置为给定的值。以后要改变当前的数据库，执行USE SQL 语句或者设置MySQLConnection实例的database属性。
 
 默认，MySQL Connector/Python会使用TCP/IP试图连接运行在本地主机的MYSQL服务器。host参数默认为IP地址127.0.0.1和port参数默认为3306。通过设置unix_socket来支持Unix sockets。在windows平台不支持named pipes。
@@ -95,16 +95,16 @@ MySQL使用客户端标志来开启和关闭特征。使用`client_flags`参数�
 
 ```python
 
-	 from mysql.connector.constants import ClientFlag
-	 print '\n'.join(ClientFlag.get_full_info()
+from mysql.connector.constants import ClientFlag
+print '\n'.join(ClientFlag.get_full_info()
 ```
-	 
+
 如果`client_flags`没有指定（即，为0），MySQL v4.1和以后版本使用默认值。如果你指定一个大于0的整数，确保所有的标志都设置正确。一种更好的方法来设置和不设置个别标志是使用列表。例如，设置`FOUND_ROWS`,关闭默认的`LONG_FLAG`:
 
 ```python
 
-	 flags = [ClientFlag.FOUND_ROWS,-ClientFlag.LONG_FLAG]
-	 mysql.connector.connect(client_flags=flags)
+flags = [ClientFlag.FOUND_ROWS,-ClientFlag.LONG_FLAG]
+mysql.connector.connect(client_flags=flags)
 ```
 
 ## 缓存结果集
@@ -123,31 +123,31 @@ MySQL使用客户端标志来开启和关闭特征。使用`client_flags`参数�
 
 ```python
 
-	 # Note (Example is valid for Python v2 and v3)
-	 from __future__ import print_function
-	 
-	 import sys
-	 
-	 #sys.path.insert(0, 'python{0}/'.format(sys.version_info[0]))
-	 
-	 import mysql.connector
-	 from mysql.connector.constants import ClientFlag
-	 
-	 config = {
-	           'user': 'ssluser',
-	           'password': 'asecret',
-	           'host': '127.0.0.1',
-	           'client_flags': [ClientFlag.SSL],
-	           'ssl_ca': '/opt/mysql/ssl/ca-cert.pem',
-	           'ssl_cert': '/opt/mysql/ssl/client-cert.pem',
-	           'ssl_key': '/opt/mysql/ssl/client-key.pem',
-	          }
-	 cnx = mysql.connector.connect(**config)
-	 cur = cnx.cursor(buffered=True)
-	 cur.execute("SHOW STATUS LIKE 'Ssl_cipher'")
-	 print(cur.fetchone())
-	 cur.close()
-	 cnx.close()
+# 注意（例子在Python v2和v3中有效）
+from __future__ import print_function
+
+import sys
+
+#sys.path.insert(0, 'python{0}/'.format(sys.version_info[0]))
+
+import mysql.connector
+from mysql.connector.constants import ClientFlag
+
+config = {
+          'user': 'ssluser',
+          'password': 'asecret',
+          'host': '127.0.0.1',
+          'client_flags': [ClientFlag.SSL],
+          'ssl_ca': '/opt/mysql/ssl/ca-cert.pem',
+          'ssl_cert': '/opt/mysql/ssl/client-cert.pem',
+          'ssl_key': '/opt/mysql/ssl/client-key.pem',
+         }
+cnx = mysql.connector.connect(**config)
+cur = cnx.cursor(buffered=True)
+cur.execute("SHOW STATUS LIKE 'Ssl_cipher'")
+print(cur.fetchone())
+cur.close()
+cnx.close()
 ```
 
 ## 连接池
@@ -164,7 +164,7 @@ MySQL使用客户端标志来开启和关闭特征。使用`client_flags`参数�
 
 ## Converter 类
 
-`converter_class`参数需要一个类，并且在配置连接的时候使用它。如果自定义的converter类不是conversion.MySQLConverterBase类的一个子类，则抛出一个AttributeError。该参数在Connector/Python 1.1.2 中可用。在1.1.2之前，仅在实例化一个新连接对象后，设置自定义converter类才可用。
+`converter_class`参数需要一个类，并且在配置连接的时候使用它。如果自定义的converter类不是 `conversion.MySQLConverterBase`类的一个子类，则抛出一个AttributeError。该参数在Connector/Python 1.1.2 中可用。在1.1.2之前，仅在实例化一个新连接对象后，设置自定义converter类才可用。
 
 ## MySQL Fabric 支持
 
